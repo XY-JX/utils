@@ -1,8 +1,10 @@
-#xy
-##一个简单的示例
+# xy
+
+## 一个简单的示例
+
 ## 安装
 第一步：
-```shell
+```
  composer require xy_jx/utils
 ```
 第二步：

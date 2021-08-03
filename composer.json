@@ -1,0 +1,21 @@
+{
+    "name": "xy_jx/utils",
+    "description": "utils",
+    "require": {
+        "php": ">=7.1.0"
+    },
+    "license": "Apache-2.0",
+    "autoload": {
+        "psr-4": {
+            "xy_jx\\Utils\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "xy_jx",
+            "email": "zhangschooi@qq.com"
+        }
+    ],
+    "minimum-stability": "dev"
+
+}

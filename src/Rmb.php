@@ -13,7 +13,7 @@ namespace xy_jx\Utils;
 
 class Rmb
 {
-    public static function rmb_capital(string $amount)
+    public static function rmb_capital($amount)
     {
         $capitalNumbers = [
             '零', '壹', '贰', '叁', '肆', '伍', '陆', '柒', '捌', '玖',
@@ -27,7 +27,7 @@ class Rmb
 
         $result = [];
 
-        $arr = explode('.', $amount);
+        $arr = explode('.', (string)$amount);
 
         $integer = trim($arr[0] ?? '', '-');
         $decimal = $arr[1] ?? '';

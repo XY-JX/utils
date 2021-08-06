@@ -4,7 +4,7 @@
     "require": {
         "php": ">=7.1.0"
     },
-    "license": "Apache-2.0",
+    "license": "MIT",
     "autoload": {
         "psr-4": {
             "xy_jx\\Utils\\": "src/"

@@ -81,7 +81,7 @@ class sundry
      */
     public static function Distance($lng1, $lat1, $lng2, $lat2)
     {
-        $m = getDistance($lng1, $lat1, $lng2, $lat2);
+        $m = self::getDistance($lng1, $lat1, $lng2, $lat2);
         if ($m > 1000) {
             if ($m > 50000) {
                 return '';

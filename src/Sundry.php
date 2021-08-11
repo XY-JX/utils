@@ -11,7 +11,7 @@ declare (strict_types=1);
 namespace xy_jx\Utils;
 
 
-class sundry
+class Sundry
 {
 
     public static function randomCode($limit = 4)

@@ -13,7 +13,7 @@
 <?php
 declare (strict_types=1);
 
-use xy_jx/utils/Rmb;
+use xy_jx/Utils/Rmb;
 class xy
 {
    echo Rmb::rmb_capital(159622);

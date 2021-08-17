@@ -25,8 +25,7 @@ class Sundry
      */
     public static function orderNo()
     {
-        $time = time();
-        return date('Ymd') . str_pad($time - strtotime(date('Y-m-d', $time)), 5, "0", STR_PAD_LEFT) . mt_rand(10, 99) . mt_rand(10, 99);
+        return date('YmdHis') . mt_rand(10, 99) . mt_rand(10, 99);
     }
 
     /**

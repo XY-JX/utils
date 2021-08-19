@@ -131,8 +131,7 @@ class Sundry
      * @param int $margin 边框
      */
     public static function qrcode($text, $level='L', $size=4, $margin=1)
-
     {
-        exit(\xy_jx\Utils\bin\QRcode::png($text, false, $level, $size, $margin));
+        return \xy_jx\Utils\bin\QRcode::png($text, false, $level, $size, $margin);
     }
 }

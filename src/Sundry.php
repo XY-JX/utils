@@ -134,7 +134,6 @@ class Sundry
 
     {
         require_once './bin/phpqrcode.php';
-        $enc = \QRencode::factory($level, $size, $margin);
-        return $enc->encodePNG($text);
+        exit(\QRcode::png($text, false, $level, $size, $margin));
     }
 }

@@ -133,7 +133,6 @@ class Sundry
     public static function qrcode($text, $level='L', $size=4, $margin=1)
 
     {
-        require_once './bin/phpqrcode.php';
-        exit(\QRcode::png($text, false, $level, $size, $margin));
+        exit(\xy_jx\Utils\bin\QRcode::png($text, false, $level, $size, $margin));
     }
 }

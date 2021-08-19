@@ -123,5 +123,18 @@ class Sundry
         return $array_data;
     }
 
+    /**
+     * 生成二维码
+     * @param $text 内容
+     * @param string $level 等级3 L M Q H
+     * @param int $size 大小
+     * @param int $margin 边框
+     */
+    public static function qrcode($text, $level='L', $size=4, $margin=1)
 
+    {
+        require_once './bin/phpqrcode.php';
+        $enc = \QRencode::factory($level, $size, $margin);
+        return $enc->encodePNG($text);
+    }
 }

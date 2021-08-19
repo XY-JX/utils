@@ -124,14 +124,14 @@ class Sundry
     }
 
     /**
-     * 生成二维码
      * @param $text 内容
+     * @param false $filename 文件名
      * @param string $level 等级3 L M Q H
      * @param int $size 大小
      * @param int $margin 边框
      */
-    public static function qrcode($text, $level='L', $size=4, $margin=1)
+    public static function qrcode($text, $filename = false, $level = 'L', $size = 4, $margin = 1)
     {
-        return \xy_jx\Utils\bin\QRcode::png($text, false, $level, $size, $margin);
+        return \xy_jx\Utils\bin\QRcode::png($text, $filename, $level, $size, $margin);
     }
 }

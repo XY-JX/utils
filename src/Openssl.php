@@ -55,7 +55,7 @@ class Openssl
     {
         $crypto = '';
         foreach (str_split(json_encode($data), self::level()[0]) as $chunk) {
-            openssl_private_encrypt(($chunk), $encrypted, self::$private_key);//私钥加密
+            openssl_private_encrypt($chunk, $encrypted, self::$private_key);//私钥加密
             $crypto .= $encrypted;
         }
         return base64_encode($crypto);//加密后的内容通常含有特殊字符，需要编码转换下，在网络间通过url传输时要注意base64编码是否是url安全的

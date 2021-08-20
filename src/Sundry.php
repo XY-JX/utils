@@ -124,6 +124,7 @@ class Sundry
     }
 
     /**
+     * 生成二维码
      * @param $text 内容
      * @param false $filename 文件名
      * @param string $level 等级3 L M Q H

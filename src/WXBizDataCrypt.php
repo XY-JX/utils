@@ -51,14 +51,14 @@ class WXBizDataCrypt
 
         $result = openssl_decrypt($aesCipher, "AES-128-CBC", $aesKey, 1, $aesIV);
 
-        $dataObj = json_decode($result);
+        $dataObj = json_decode($result,true);
         if ($dataObj == NULL) {
             return -41003;
         }
-        if ($dataObj->watermark->appid != $this->appid) {
+        if ($dataObj['watermark']['appid'] != $this->appid) {
             return -41003;
         }
-        $data = $result;
+        $data = $dataObj;
         return 0;
     }
 

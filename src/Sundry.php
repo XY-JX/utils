@@ -149,10 +149,36 @@ class Sundry
     public static function base64qrcode($text, $filename = false, $level = 'L', $size = 4, $margin = 1, $saveandprint = false)
     {
         ob_start();
-        self::qrcode($text, $filename , $level , $size , $margin , $saveandprint );
+        self::qrcode($text, $filename, $level, $size, $margin, $saveandprint);
         $img = ob_get_contents();//获取缓冲区内容
         ob_end_clean();//清除缓冲区内容
         ob_flush();
-        return 'data:image/png;base64,'.str_replace(["\r\n", "\r", "\n"], '',chunk_split(base64_encode($img)));//转base64      清除base64中的换行符
+        return 'data:image/png;base64,' . str_replace(["\r\n", "\r", "\n"], '', chunk_split(base64_encode($img)));//转base64      清除base64中的换行符
+    }
+
+    /**
+     * 微信验证签名
+     * @param array $data 需要验签的数据
+     * @param string $secretKey 私钥
+     * @return bool
+     */
+    public static function wechat_verify(array $data, string $secretKey)
+    {
+        $sign = $data['sign'];
+        unset($data['sign']);
+        return $sign == self::wechat_sign($data, $secretKey) ? true : false;
+    }
+
+    /**
+     * 微信签名
+     * @param array $data 需要签名的数据
+     * @param string $secretKey 私钥
+     * @return string
+     */
+    public static function wechat_sign(array $data, string $secretKey)
+    {
+        ksort($data);
+        $SignTemp = urldecode(http_build_query($data)) . '&key=' . $secretKey;
+        return strtoupper(md5($SignTemp));
     }
 }

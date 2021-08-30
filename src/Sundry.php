@@ -181,4 +181,31 @@ class Sundry
         $SignTemp = urldecode(http_build_query($data)) . '&key=' . $secretKey;
         return strtoupper(md5($SignTemp));
     }
+
+    /**
+     * 幸运抽签
+     * @param array $array 根据概率ASC 排序的二维数组 （中将概率必须是正整数）
+     * @param string $chance 概率字段
+     * @param false $stock 库存字段 不考虑库存不传
+     * @return array|mixed
+     */
+    public static function luck_draw(array $array, $chance = 'chance', $stock = false)
+    {
+        $return = [];
+        $sum = 0;
+        foreach ($array as $val) {
+            $sum += $val[$chance]; //总概率
+        }
+        //概率数组循环
+        foreach ($array as $val) {
+            $randNum = mt_rand(1, $sum);
+            if ($randNum <= $val[$chance] && (!$stock || $val[$stock] >= 1)) { //如果这个随机数小于等于数组中的一个元素 并且库存足够，则返回中将数据
+                $return = $val;
+                break;
+            } else {
+                $sum -= $val[$chance];
+            }
+        }
+        return $return;
+    }
 }

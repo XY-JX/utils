@@ -20,10 +20,11 @@ class DelayQueue
     /**
      * 构造
      * @param string $queue 队列名称
-     * @param array $config
+     * @param array $config host:地址（127.0.0.1） port:端口（6379） timeout:超时时间（秒） auth:密码 select:数据库
      */
     public function __construct(string $queue, array $config = [])
     {
+
         $this->key = $this->prefix . $queue;
         $this->redis = new \Redis();
         $this->redis->connect($config['host'], $config['port'], $config['timeout']);
@@ -50,7 +51,7 @@ class DelayQueue
      */
     public function getTask($limit = 1)
     {
-        //获取任务，以0和当前时间为区间，返回一条记录
+        //获取任务，以0和当前时间为区间，返回（$limit）条记录
         return $this->redis->zRangeByScore($this->key, 0, time(), ['limit' => [0, $limit]]);
     }
 
@@ -77,7 +78,8 @@ class DelayQueue
 
     /**
      * 获取数据并从队列中删除
-     * @return false|mixed
+     * @param int $limit
+     * @return array
      */
     public function getData($limit = 1)
     {

@@ -29,7 +29,7 @@ class Sundry
     }
 
     /**
-     * 据传入的经纬度，和距离范围，返回所有在距离范围内的经纬度的取值范围
+     * 据传入的经纬度，和距离范围，返回所在距离范围内的经纬度的取值范围
      * @param $lng
      * @param $lat
      * @param float $distance 单位：km
@@ -76,17 +76,13 @@ class Sundry
      * @param $lat1 纬度
      * @param $lng2 经度
      * @param $lat2 纬度
-     * @return float 距离：km <=50km
+     * @return string 距离：km,m
      */
     public static function Distance($lng1, $lat1, $lng2, $lat2)
     {
         $m = self::getDistance($lng1, $lat1, $lng2, $lat2);
         if ($m > 1000) {
-            if ($m > 50000) {
-                return '';
-            } else {
-                return round(($m / 1000), 1) . 'km';
-            }
+            return round($m / 1000, 1) . 'km';
         } else {
             return $m . 'm';
         }
@@ -125,28 +121,28 @@ class Sundry
 
     /**
      * 生成二维码
-     * @param $text 内容
+     * @param string $text 内容
      * @param false $filename 文件名
      * @param string $level 等级3 L M Q H
      * @param int $size 大小
      * @param int $margin 边框
      * @param false $saveandprint
      */
-    public static function qrcode($text, $filename = false, $level = 'L', $size = 4, $margin = 1, $saveandprint = false)
+    public static function qrcode(string $text, $filename = false, $level = 'L', $size = 4, $margin = 1, $saveandprint = false)
     {
         return \xy_jx\Utils\bin\QRcode::png($text, $filename, $level, $size, $margin, $saveandprint);
     }
 
     /**
      * 生成base64二维码
-     * @param $text 内容
+     * @param string $text 内容
      * @param false $filename 文件名
      * @param string $level 等级3 L M Q H
      * @param int $size 大小
      * @param int $margin 边框
      * @param false $saveandprint
      */
-    public static function base64qrcode($text, $filename = false, $level = 'L', $size = 4, $margin = 1, $saveandprint = false)
+    public static function base64qrcode(string $text, $filename = false, $level = 'L', $size = 4, $margin = 1, $saveandprint = false)
     {
         ob_start();
         self::qrcode($text, $filename, $level, $size, $margin, $saveandprint);
@@ -186,10 +182,10 @@ class Sundry
      * 幸运抽签
      * @param array $array 根据概率ASC 排序的二维数组 （中将概率必须是正整数）
      * @param string $chance 概率字段
-     * @param false $stock 库存字段 不考虑库存不传
+     * @param false|string $stock 库存字段 不考虑库存不传
      * @return array|mixed
      */
-    public static function luck_draw(array $array, $chance = 'chance', $stock = false)
+    public static function luck_draw(array $array, string $chance = 'chance', $stock = false)
     {
         $return = [];
         $sum = 0;

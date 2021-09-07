@@ -8,7 +8,9 @@
 // +----------------------------------------------------------------------
 
 namespace xy_jx\Utils;
+
 use Exception;
+
 class Openssl
 {
     protected static $public_key;
@@ -21,14 +23,14 @@ class Openssl
      * @param $privateKeyFile 证书地址
      * @param int $level
      */
-    public function __construct($publicKeyFile, $privateKeyFile ,$level = 1024 )
+    public function __construct($publicKeyFile, $privateKeyFile, $level = 1024)
     {
         try {
             self::$public_key = file_get_contents($publicKeyFile);
             self::$private_key = file_get_contents($privateKeyFile);
             self::$level = $level;
         } catch (Exception $exception) {
-           echo $exception->getMessage();
+            throw new \Exception($exception->getMessage());
         }
     }
 //    1024   117   128

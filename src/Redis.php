@@ -21,7 +21,6 @@ class Redis
         'd' => 86400,
     ];
     /**
-     * 配置参数
      * @var array
      */
     protected static $options = [
@@ -39,8 +38,7 @@ class Redis
 
     /**
      * 架构函数
-     * @access public
-     * @param array $options 缓存参数
+     * @param array $options
      */
     public function __construct(array $options = [])
     {
@@ -72,7 +70,7 @@ class Redis
 
             self::$handler['prefix'] = '';
         } else {
-            throw new \BadFunctionCallException('not support: redis');
+            throw new \Exception('not support: redis');
         }
         if (self::$options['select']) {
             self::$handler->select((int)self::$options['select']);

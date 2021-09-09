@@ -204,4 +204,29 @@ class Sundry
         }
         return $return;
     }
+
+    /**
+     * redis
+     * @param array $options redis配置
+     * @return \Predis\Client|\Redis
+     */
+    public static function redis(array $options = [])
+    {
+        $Redis = new Redis($options);
+        return $Redis::handler();
+    }
+
+    /**
+     * 访问限制
+     * @param array $options redis配置
+     * @param string $key ip|uid
+     * @param int $limit 限制次数
+     * @param string $time 时间范围 s m h d
+     */
+    public static function restrict(array $options, string $key, int $limit = 3, string $time = 's')
+    {
+        $Redis = new Redis($options);
+        return $Redis::restrict($key, $limit, $time);
+    }
+
 }

@@ -9,29 +9,23 @@
 
 namespace xy_jx\Utils;
 
-
 class DelayQueue
 {
 
-    protected $prefix = 'delay_queue:';
-    protected $redis = null;
-    protected $key = '';
+    protected static $prefix = 'delay_queue:';
+    protected static $redis = null;
+    protected static $key = '';
 
     /**
      * 构造
+     * @param array $config host:地址（127.0.0.1） port:端口（6379） timeout:超时时间（秒） password:密码 select:数据库
      * @param string $queue 队列名称
-     * @param array $config host:地址（127.0.0.1） port:端口（6379） timeout:超时时间（秒） auth:密码 select:数据库
      */
-    public function __construct(string $queue, array $config = [])
+    public function __construct(array $config = [], string $queue = 'list')
     {
-
-        $this->key = $this->prefix . $queue;
-        $this->redis = new \Redis();
-        $this->redis->connect($config['host'], $config['port'], $config['timeout']);
-        if (isset($config['auth']))
-            $this->redis->auth($config['auth']);
-        if (isset($config['select']))
-            $this->redis->select($config['select']);
+        self::$key = self::$prefix . $queue;
+        $Redis = new Redis($config);
+        self::$redis = $Redis::handler();
     }
 
     /**
@@ -39,9 +33,9 @@ class DelayQueue
      * @param $value
      * @return int
      */
-    public function delTask($value)
+    public static function delTask($value)
     {
-        return $this->redis->zRem($this->key, $value);
+        return self::$redis->zRem(self::$key, $value);
     }
 
     /**
@@ -49,10 +43,10 @@ class DelayQueue
      * @param int $limit 记录数默认1
      * @return array
      */
-    public function getTask($limit = 1)
+    public static function getTask($limit = 1)
     {
         //获取任务，以0和当前时间为区间，返回（$limit）条记录
-        return $this->redis->zRangeByScore($this->key, 0, time(), ['limit' => [0, $limit]]);
+        return self::$redis->zRangeByScore(self::$key, 0, time(), ['limit' => [0, $limit]]);
     }
 
     /**
@@ -62,16 +56,16 @@ class DelayQueue
      * @param array $data 任务参数
      * @return int
      */
-    public function addTask(string $name, int $time, array $data)
+    public static function addTask(string $name, int $time, array $data)
     {
         //添加任务，以时间作为score，对任务队列按时间从小到大排序
-        return $this->redis->zAdd(
-            $this->key,
+        return self::$redis->zAdd(
+            self::$key,
             $time,
             json_encode([
-                'task_name' => $name,
-                'task_time' => $time,
-                'task_data' => $data,
+                'name' => $name,
+                'time' => $time,
+                'data' => $data,
             ], JSON_UNESCAPED_UNICODE)
         );
     }
@@ -81,12 +75,12 @@ class DelayQueue
      * @param int $limit
      * @return array
      */
-    public function getData($limit = 1)
+    public static function getData($limit = 1)
     {
         $return = [];
-        $task = $this->getTask($limit);
+        $task = self::getTask($limit);
         foreach ($task as $value) {
-            if ($this->delTask($value)) {
+            if (self::delTask($value)) {
                 $return[] = json_decode($value, true);
             }
         }

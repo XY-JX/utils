@@ -10,8 +10,8 @@
 namespace xy_jx\Utils;
 class WXBizDataCrypt
 {
-    private $appid;
-    private $sessionKey;
+    private static $appid;
+    private static $sessionKey;
 
     /**
      * 构造函数
@@ -21,8 +21,8 @@ class WXBizDataCrypt
      */
     public function __construct($appid, $sessionKey)
     {
-        $this->sessionKey = $sessionKey;
-        $this->appid = $appid;
+        self::$sessionKey = $sessionKey;
+        self::$appid = $appid;
     }
 
 
@@ -34,12 +34,12 @@ class WXBizDataCrypt
      *
      * @return int 成功0，失败返回对应的错误码
      */
-    public function decryptData($encryptedData, $iv, &$data)
+    public static function decryptData($encryptedData, $iv, &$data)
     {
-        if (strlen($this->sessionKey) != 24) {
+        if (strlen(self::$sessionKey) != 24) {
             return -41001;
         }
-        $aesKey = base64_decode($this->sessionKey);
+        $aesKey = base64_decode(self::$sessionKey);
 
 
         if (strlen($iv) != 24) {
@@ -51,11 +51,11 @@ class WXBizDataCrypt
 
         $result = openssl_decrypt($aesCipher, "AES-128-CBC", $aesKey, 1, $aesIV);
 
-        $dataObj = json_decode($result,true);
+        $dataObj = json_decode($result, true);
         if ($dataObj == NULL) {
             return -41003;
         }
-        if ($dataObj['watermark']['appid'] != $this->appid) {
+        if ($dataObj['watermark']['appid'] != self::$appid) {
             return -41003;
         }
         $data = $dataObj;

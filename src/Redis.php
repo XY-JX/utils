@@ -102,7 +102,7 @@ class Redis
                 return false;
             }
         } else {
-            self::$handler->set($key, 1, self::$duration[$time]);
+            self::$handler->set($key, 1, ['nx', 'ex' => self::$duration[$time]]);
         }
         return true;
     }

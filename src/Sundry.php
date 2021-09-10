@@ -195,7 +195,7 @@ class Sundry
         //概率数组循环
         foreach ($array as $val) {
             $randNum = mt_rand(1, $sum);
-            if ($randNum <= $val[$chance] && (!$stock || $val[$stock] >= 1)) { //如果这个随机数小于等于数组中的一个元素 并且库存足够，则返回中将数据
+            if ($randNum <= $val[$chance] && (!$stock || $val[$stock] > 0)) { //如果这个随机数小于等于数组中的一个元素 并且库存足够，则返回中将数据
                 $return = $val;
                 break;
             } else {

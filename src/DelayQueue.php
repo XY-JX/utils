@@ -33,7 +33,7 @@ class DelayQueue
      * @param $value
      * @return int
      */
-    public static function delTask($value)
+    public static function del($value)
     {
         return self::$redis->zRem(self::$key, $value);
     }
@@ -43,7 +43,7 @@ class DelayQueue
      * @param int $limit 记录数默认1
      * @return array
      */
-    public static function getTask($limit = 1)
+    public static function get($limit = 1)
     {
         //获取任务，以0和当前时间为区间，返回（$limit）条记录
         return self::$redis->zRangeByScore(self::$key, 0, time(), ['limit' => [0, $limit]]);
@@ -56,7 +56,7 @@ class DelayQueue
      * @param array $data 任务参数
      * @return int
      */
-    public static function addTask(string $name, int $time, array $data)
+    public static function add(string $name, int $time, array $data)
     {
         //添加任务，以时间作为score，对任务队列按时间从小到大排序
         return self::$redis->zAdd(
@@ -78,9 +78,9 @@ class DelayQueue
     public static function getData($limit = 1)
     {
         $return = [];
-        $task = self::getTask($limit);
+        $task = self::get($limit);
         foreach ($task as $value) {
-            if (self::delTask($value)) {
+            if (self::del($value)) {
                 $return[] = json_decode($value, true);
             }
         }

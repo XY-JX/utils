@@ -42,9 +42,9 @@ class Redis
      */
     public function __construct(array $options = [])
     {
-        if (!empty($options)) {
+        if (!empty($options))
             self::$options = array_merge(self::$options, $options);
-        }
+
         if (extension_loaded('redis')) {
             self::$handler = new \Redis;
             if (self::$options['persistent']) {

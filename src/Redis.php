@@ -91,6 +91,7 @@ class Redis
      * @param string $key ip|uid
      * @param int $limit 限制次数
      * @param string $time 时间范围 s m h d
+     * @return bool
      */
     public static function restrict(string $key, int $limit = 3, string $time = 's')
     {

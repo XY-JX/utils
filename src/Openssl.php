@@ -19,11 +19,11 @@ class Openssl
 
     /**
      * Openssl constructor.
-     * @param $publicKeyFile 证书地址
-     * @param $privateKeyFile 证书地址
-     * @param int $level
+     * @param string $publicKeyFile 证书地址
+     * @param string $privateKeyFile 证书地址
+     * @param int $level 钥位数
      */
-    public function __construct($publicKeyFile, $privateKeyFile, $level = 1024)
+    public function __construct(string $publicKeyFile = __DIR__ . '/cert/pub.key', string $privateKeyFile = __DIR__ . '/cert/pri.key', int $level = 4096)
     {
         try {
             self::$public_key = file_get_contents($publicKeyFile);
@@ -76,6 +76,6 @@ class Openssl
             openssl_public_decrypt($chunk, $decrypted, self::$public_key);//私钥加密的内容通过公钥可用解密出来
             $crypto .= $decrypted;
         }
-        return json_decode($crypto);
+        return json_decode($crypto,true);
     }
 }

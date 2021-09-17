@@ -135,16 +135,15 @@ class Sundry
     /**
      * 生成base64二维码
      * @param string $text 内容
-     * @param false $filename 文件名
      * @param string $level 等级3 L M Q H
      * @param int $size 大小
      * @param int $margin 边框
      * @param false $saveandprint
      */
-    public static function base64qrcode(string $text, $filename = false, $level = 'L', $size = 4, $margin = 1, $saveandprint = false)
+    public static function base64qrcode(string $text, $level = 'L', $size = 4, $margin = 1)
     {
         ob_start();
-        self::qrcode($text, $filename, $level, $size, $margin, $saveandprint);
+        self::qrcode($text, false, $level, $size, $margin);
         $img = ob_get_contents();//获取缓冲区内容
         ob_end_clean();//清除缓冲区内容
         ob_flush();

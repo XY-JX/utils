@@ -21,7 +21,7 @@ class Openssl
      * Openssl constructor.
      * @param string $publicKeyFile 证书地址
      * @param string $privateKeyFile 证书地址
-     * @param int $level 钥位数
+     * @param int $level 钥位数 1024 2048 4096
      */
     public function __construct(string $publicKeyFile = __DIR__ . '/cert/pub.key', string $privateKeyFile = __DIR__ . '/cert/pri.key', int $level = 4096)
     {

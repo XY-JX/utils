@@ -248,8 +248,8 @@ class Sundry
         }
         return $arr;
     }
-
-    /**
+    
+     /**
      * 返回数组中指定多列
      * @param array $array 需要取出数组列的多维数组
      * @param array $keys 要取出的列名，如不传则返回所有列

@@ -248,4 +248,35 @@ class Sundry
         }
         return $arr;
     }
+    
+     /**
+     * 返回数组中指定多列
+     * @param array $array 需要取出数组列的多维数组
+     * @param array $keys 要取出的列名，如不传则返回所有列
+     * @param null $index_key 作为返回数组的索引的列
+     * @return array
+     */
+    public static function array_columns(array $array, array $keys = [], $index_key = null)
+    {
+        $result = [];
+        if (!$array) return $result;
+        foreach ($array as $v) {
+            // 指定返回列
+            $item = [];
+            if ($keys) {
+                foreach ($keys as $key) {
+                    $item[$key] = $v[$key];
+                }
+            } else {
+                $item = $v;
+            }
+            // 指定索引列
+            if ($index_key) {
+                $result[$v[$index_key]] = $item;
+            } else {
+                $result[] = $item;
+            }
+        }
+        return $result;
+    }
 }

@@ -248,8 +248,8 @@ class Sundry
         }
         return $arr;
     }
-    
-     /**
+
+    /**
      * 返回数组中指定多列
      * @param array $array 需要取出数组列的多维数组
      * @param array $keys 要取出的列名，如不传则返回所有列
@@ -278,5 +278,38 @@ class Sundry
             }
         }
         return $result;
+    }
+
+    /**
+     * 进制转换
+     * @param $num 需要转换的值
+     * @param int $current 当前进制
+     * @param int $result 需要转成的进制（最大支持62）
+     * @return int|string
+     */
+    public static function convert($num, int $current = 10, int $result = 32)
+    {
+        if ($current > 62 || $result > 62) return '';
+        if ($current > 32 || $result > 32) {
+            $dict = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+            if ($current > $result) { // 62进制数转换成十进制数
+                $num = strval($num);
+                $len = strlen($num);
+                $dec = 0;
+                for ($i = 0; $i < $len; $i++) {
+                    $pos = strpos($dict, $num[$i]);
+                    $dec = bcadd(bcmul(bcpow($current, $len - $i - 1), $pos), $dec);
+                }
+                return $dec;
+            } else { //十进制数转换成62进制
+                $ret = '';
+                do {
+                    $ret = $dict[bcmod($num, $result)] . $ret;
+                    $num = bcdiv($num, $result);
+                } while ($num > 0);
+                return $ret;
+            }
+        }
+        return base_convert($num, $current, $result);
     }
 }

@@ -281,15 +281,14 @@ class Sundry
     }
 
     /**
-     * 进制转换
-     * @param $num 需要转换的值
+     * @param mixed $num 需要转换的值
      * @param int $current 当前进制
      * @param int $result 需要转成的进制（最大支持62）
-     * @return int|string
+     * @return false|int|string
      */
     public static function convert($num, int $current = 10, int $result = 32)
     {
-        if ($current > 62 || $result > 62) return '';
+        if ($current > 62 || $result > 62) return false;
         if ($current > 32 || $result > 32) {
             $dict = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
             if ($current > $result) { // 62进制数转换成十进制数

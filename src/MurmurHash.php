@@ -18,7 +18,7 @@ class MurmurHash
      * @param  integer $seed  仅限正整数
      * @return integer 32位正整数散列
      */
-    public static function hash3_int(string $key, int $seed=0) : int {
+    public static function hash3Int(string $key, int $seed=0) : int {
         $key  = array_values(unpack('C*', $key));
         $klen = count($key);
         $h1   = $seed < 0 ? -$seed : $seed;

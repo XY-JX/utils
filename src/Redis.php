@@ -14,6 +14,7 @@ class Redis
 {
 
     protected static $handler;
+    protected static $persistent_id;
     public static $duration = [
         's' => 1,
         'm' => 60,
@@ -42,13 +43,16 @@ class Redis
      */
     public function __construct(array $options = [])
     {
-        if (!empty($options))
-            self::$options = array_merge(self::$options, $options);
-
+        // 加载配置参数，替换默认参数
+        if (!empty($options)) self::$options = array_merge(self::$options, $options);
+        // 如果链接存在并且链接参数一致复用链接
+        $persistent_id = md5(self::$options['select'] . self::$options['port'] . self::$options['host']);
+        if (self::$handler && self::$persistent_id == $persistent_id) return true;
+        self::$persistent_id = $persistent_id;
         if (extension_loaded('redis')) {
             self::$handler = new \Redis;
             if (self::$options['persistent']) {
-                self::$handler->pconnect(self::$options['host'], (int)self::$options['port'], (int)self::$options['timeout'], 'persistent_id_' . self::$options['select']);
+                self::$handler->pconnect(self::$options['host'], (int)self::$options['port'], (int)self::$options['timeout'], self::$persistent_id);
             } else {
                 self::$handler->connect(self::$options['host'], (int)self::$options['port'], (int)self::$options['timeout']);
             }
@@ -75,6 +79,7 @@ class Redis
         if (self::$options['select']) {
             self::$handler->select((int)self::$options['select']);
         }
+
     }
 
     /**

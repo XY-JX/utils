@@ -34,7 +34,7 @@ class Sundry
      * @param float $distance 单位：km
      * @return array
      */
-    public static function location_range($lng, $lat, $distance = 2)
+    public static function locationRange($lng, $lat, $distance = 2)
     {
         $earthRadius = 6378.137;//单位km
         $d_lng = 2 * asin(sin($distance / (2 * $earthRadius)) / cos(deg2rad($lat)));
@@ -77,7 +77,7 @@ class Sundry
      * @param $lat2 纬度
      * @return string 距离：km,m
      */
-    public static function Distance($lng1, $lat1, $lng2, $lat2)
+    public static function distance($lng1, $lat1, $lng2, $lat2)
     {
         $m = self::getDistance($lng1, $lat1, $lng2, $lat2);
         if ($m > 1000) {
@@ -92,7 +92,7 @@ class Sundry
      * @param $arr
      * @return string
      */
-    public static function ArrToXml($arr)
+    public static function arrToXml($arr)
     {
         if (!is_array($arr) || count($arr) == 0) return '';
         $xml = "<xml>";
@@ -112,7 +112,7 @@ class Sundry
      * @param $xml
      * @return mixed
      */
-    public static function XmlToArr($xml)
+    public static function xmlToArr($xml)
     {
         $array_data = json_decode(json_encode(simplexml_load_string($xml, 'SimpleXMLElement', LIBXML_NOCDATA)), true);
         return $array_data;
@@ -140,7 +140,7 @@ class Sundry
      * @param int $margin 边框
      * @param false $saveandprint
      */
-    public static function base64qrcode(string $text, $level = 'L', $size = 4, $margin = 1)
+    public static function base64Qrcode(string $text, $level = 'L', $size = 4, $margin = 1)
     {
         ob_start();
         self::qrcode($text, false, $level, $size, $margin);
@@ -156,11 +156,11 @@ class Sundry
      * @param string $secretKey 私钥
      * @return bool
      */
-    public static function wechat_verify(array $data, string $secretKey)
+    public static function wechatVerify(array $data, string $secretKey)
     {
         $sign = $data['sign'];
         unset($data['sign']);
-        return $sign == self::wechat_sign($data, $secretKey) ? true : false;
+        return $sign == self::wechatSign($data, $secretKey) ? true : false;
     }
 
     /**
@@ -169,7 +169,7 @@ class Sundry
      * @param string $secretKey 私钥
      * @return string
      */
-    public static function wechat_sign(array $data, string $secretKey)
+    public static function wechatSign(array $data, string $secretKey)
     {
         ksort($data);
         $SignTemp = urldecode(http_build_query($data)) . '&key=' . $secretKey;
@@ -183,7 +183,7 @@ class Sundry
      * @param false|string $stock 库存字段 不考虑库存不传
      * @return array|mixed
      */
-    public static function luck_draw(array $array, string $chance = 'chance', $stock = false)
+    public static function luckDraw(array $array, string $chance = 'chance', $stock = false)
     {
         $return = [];
         $sum = 0;
@@ -256,7 +256,7 @@ class Sundry
      * @param null $index_key 作为返回数组的索引的列
      * @return array
      */
-    public static function array_columns(array $array, array $keys = [], $index_key = null)
+    public static function arrayColumns(array $array, array $keys = [], $index_key = null)
     {
         $result = [];
         if (!$array) return $result;

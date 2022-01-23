@@ -52,7 +52,7 @@ class Encryption
      * @param string $iv
      * @return array
      */
-    public static function long_decrypt(string $encryptedData, string $iv = '')
+    public static function longDecrypt(string $encryptedData, string $iv = '')
     {
         $result = '';
         foreach (str_split($encryptedData, 880) as $chunk) {
@@ -67,7 +67,7 @@ class Encryption
      * @param string $iv
      * @return array
      */
-    public static function long_encrypt(array $encryptedData, string $iv = '')
+    public static function longEncrypt(array $encryptedData, string $iv = '')
     {
         $result = '';
         foreach (str_split(json_encode($encryptedData), 660) as $chunk) {

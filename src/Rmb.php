@@ -12,7 +12,7 @@ namespace xy_jx\Utils;
 
 class Rmb
 {
-    public static function rmb_capital($amount)
+    public static function rmbCapital($amount)
     {
         $capitalNumbers = [
             '零', '壹', '贰', '叁', '肆', '伍', '陆', '柒', '捌', '玖',

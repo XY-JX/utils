@@ -28,7 +28,7 @@ class Redis
         'host' => '127.0.0.1',
         'port' => 6379,
         'password' => '',
-        'select' => 0,
+        'select' => 1,
         'timeout' => 0,
         'expire' => 0,
         'persistent' => false,//是否开启长链接
@@ -48,18 +48,21 @@ class Redis
         // 加载配置参数，替换默认参数
         if (!empty($options)) self::$options = array_merge(self::$options, $options);
 
-        if (extension_loaded('redis')) {
-            self::$handler = new \Redis;
-            if (self::$options['persistent']) {
-                // 如果链接存在并且链接参数一致复用链接
-                $persistent_id = self::$options['persistent_id'] ?: self::$options['host'] . self::$options['port'] . self::$options['select'];
-                if (self::$handler && self::$persistent_id == $persistent_id) return true;
-                self::$persistent_id = $persistent_id;
+        // 如果链接存在并且链接参数一致复用链接
+        $persistent_id = self::$options['persistent_id'] ?: self::$options['host'] . self::$options['port'] . self::$options['select'];
+        if (self::$handler && self::$persistent_id == $persistent_id) return true;
+        self::$persistent_id = $persistent_id;
 
+        if (extension_loaded('redis')) {
+
+            self::$handler = new \Redis;
+
+            if (self::$options['persistent']) {
                 self::$handler->pconnect(self::$options['host'], self::$options['port'], self::$options['timeout'], $persistent_id);
             } else {
                 self::$handler->connect(self::$options['host'], self::$options['port'], self::$options['timeout']);
             }
+
             if (self::$options['password'])
                 self::$handler->auth(self::$options['password']);
 

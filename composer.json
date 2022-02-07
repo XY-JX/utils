@@ -2,7 +2,7 @@
     "name": "xy_jx/utils",
     "description": "utils",
     "require": {
-        "php": ">=7.1.0"
+        "php": ">=7.3.0"
     },
     "license": "MIT",
     "autoload": {

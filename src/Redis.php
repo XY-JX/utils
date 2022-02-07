@@ -31,7 +31,8 @@ class Redis
         'select' => 0,
         'timeout' => 0,
         'expire' => 0,
-        'persistent' => false,
+        'persistent' => false,//是否开启长链接
+        'persistent_id' => '',//用于指定长链接id 特殊情况下使用
         'prefix' => '',
         'tag_prefix' => 'tag:',
         'serialize' => [],
@@ -40,46 +41,34 @@ class Redis
     /**
      * 架构函数
      * @param array $options
+     * @throws \Exception
      */
     public function __construct(array $options = [])
     {
         // 加载配置参数，替换默认参数
         if (!empty($options)) self::$options = array_merge(self::$options, $options);
-        // 如果链接存在并且链接参数一致复用链接
-        $persistent_id = md5(self::$options['select'] . self::$options['port'] . self::$options['host']);
-        if (self::$handler && self::$persistent_id == $persistent_id) return true;
-        self::$persistent_id = $persistent_id;
+
         if (extension_loaded('redis')) {
             self::$handler = new \Redis;
             if (self::$options['persistent']) {
-                self::$handler->pconnect(self::$options['host'], (int)self::$options['port'], (int)self::$options['timeout'], self::$persistent_id);
-            } else {
-                self::$handler->connect(self::$options['host'], (int)self::$options['port'], (int)self::$options['timeout']);
-            }
-            if (!self::$options['password']) {
-                self::$handler->auth(self::$options['password']);
-            }
-        } elseif (class_exists('\Predis\Client')) {
-            $params = [];
-            foreach (self::$options as $key => $val) {
-                if (in_array($key, ['aggregate', 'cluster', 'connections', 'exceptions', 'prefix', 'profile', 'replication', 'parameters'])) {
-                    $params[$key] = $val;
-                    unset(self::$options[$key]);
-                }
-            }
-            if (!self::$options['password']) {
-                unset(self::$options['password']);
-            }
-            self::$handler = new \Predis\Client(self::$options, $params);
+                // 如果链接存在并且链接参数一致复用链接
+                $persistent_id = self::$options['persistent_id'] ?: self::$options['host'] . self::$options['port'] . self::$options['select'];
+                if (self::$handler && self::$persistent_id == $persistent_id) return true;
+                self::$persistent_id = $persistent_id;
 
-            self::$handler['prefix'] = '';
+                self::$handler->pconnect(self::$options['host'], self::$options['port'], self::$options['timeout'], $persistent_id);
+            } else {
+                self::$handler->connect(self::$options['host'], self::$options['port'], self::$options['timeout']);
+            }
+            if (!self::$options['password'])
+                self::$handler->auth(self::$options['password']);
+
+            if (self::$options['select'])
+                self::$handler->select(self::$options['select']);
+
         } else {
             throw new \Exception('not support: redis');
         }
-        if (self::$options['select']) {
-            self::$handler->select((int)self::$options['select']);
-        }
-
     }
 
     /**

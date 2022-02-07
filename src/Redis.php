@@ -60,7 +60,7 @@ class Redis
             } else {
                 self::$handler->connect(self::$options['host'], self::$options['port'], self::$options['timeout']);
             }
-            if (!self::$options['password'])
+            if (self::$options['password'])
                 self::$handler->auth(self::$options['password']);
 
             if (self::$options['select'])

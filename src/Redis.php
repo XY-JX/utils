@@ -28,7 +28,7 @@ class Redis
         'host' => '127.0.0.1',
         'port' => 6379,
         'password' => '',
-        'select' => 1,
+        'select' => 0,
         'timeout' => 0,
         'expire' => 0,
         'persistent' => false,//是否开启长链接

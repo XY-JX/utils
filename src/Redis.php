@@ -51,7 +51,6 @@ class Redis
         // 如果链接存在并且链接参数一致复用链接
         $persistent_id = self::$options['persistent_id'] ?: self::$options['host'] . self::$options['port'] . self::$options['select'];
         if (self::$handler && self::$persistent_id == $persistent_id) return true;
-        self::$persistent_id = $persistent_id;
 
         if (extension_loaded('redis')) {
 
@@ -59,6 +58,7 @@ class Redis
 
             if (self::$options['persistent']) {
                 self::$handler->pconnect(self::$options['host'], self::$options['port'], self::$options['timeout'], $persistent_id);
+                self::$persistent_id = $persistent_id;
             } else {
                 self::$handler->connect(self::$options['host'], self::$options['port'], self::$options['timeout']);
             }

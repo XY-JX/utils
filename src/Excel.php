@@ -1,5 +1,7 @@
 <?php
+
 namespace xy_jx\Utils;
+
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 
@@ -43,10 +45,10 @@ class Excel
      */
     private static function initialize()
     {
-        self:: $spreadsheet = new Spreadsheet();
-        self:: $worksheet = self:: $spreadsheet->getActiveSheet();
-        self:: $worksheet->getDefaultColumnDimension()->setWidth(20);//设置默认宽度
-        self::  $worksheet->getDefaultRowDimension()->setRowHeight(30);//设置默认行高
+        self::$spreadsheet = new Spreadsheet();
+        self::$worksheet = self:: $spreadsheet->getActiveSheet();
+        self::$worksheet->getDefaultColumnDimension()->setWidth(20);//设置默认宽度
+        self::$worksheet->getDefaultRowDimension()->setRowHeight(30);//设置默认行高
 
     }
 
@@ -61,7 +63,7 @@ class Excel
     {
         self::initialize();
         $length = count($header);
-        self:: $title = date('Y-m-d') . ' ' . $title;
+        self::$title = date('Y-m-d') . ' ' . $title;
         if ($length > 0) {
             self::$width_row = array_slice(self::$cellKey, 0, $length);
         } else {
@@ -138,20 +140,18 @@ class Excel
      * @param array $cols 设置字段 从A开始 ['id','name','content']
      * @param int $start 开始行数
      * @param int $sheetIndex sheet索引页
-     * @return array
-     * @throws \PhpOffice\PhpSpreadsheet\Exception
-     * @throws \PhpOffice\PhpSpreadsheet\Reader\Exception
+     * @return array|string
      */
-    public static function getFileData(array $filePath, array $cols = [], int $start = 2, int $sheetIndex = 0): array
+    public static function getFileData(array $filePath, array $cols = [], int $start = 2, int $sheetIndex = 0)
     {
         $objReader = IOFactory::createReader(parse_name($filePath['extension'], 1));//设置类型的读取器
         $objReader->setReadDataOnly(true);
         $spreadsheet = $objReader->load($filePath['full_url']); //载入excel表格
-//        $sheetCount =  $spreadsheet->getSheetCount(); //获取sheet索引 总数
+//      $sheetCount =  $spreadsheet->getSheetCount(); //获取sheet索引 总数
         $worksheet = $spreadsheet->getSheet($sheetIndex);
         $highestRow = $worksheet->getHighestRow(); // 总行数
         if ($highestRow - $start < 0) {
-            \Api::error('Excel文件中无有效数据');
+            return 'Excel文件中无有效数据';
         }
         $data = [];
         for ($row = $start; $row <= $highestRow; $row++) {

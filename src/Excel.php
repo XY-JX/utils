@@ -136,17 +136,18 @@ class Excel
 
     /**
      * 获取Excel文本数据
-     * @param array $filePath 文件信息
+     * @param string $filePath 文件信息
      * @param array $cols 设置字段 从A开始 ['id','name','content']
+     * @param string $readerType 解析类 Xlsx,Xls,Xml,Ods,Slk,Gnumeric,Html,Csv
      * @param int $start 开始行数
      * @param int $sheetIndex sheet索引页
      * @return array|string
      */
-    public static function getFileData(array $filePath, array $cols = [], int $start = 2, int $sheetIndex = 0)
+    public static function getFileData(string $filePath, array $cols = [], string $readerType = 'Xlsx', int $start = 2, int $sheetIndex = 0)
     {
-        $objReader = IOFactory::createReader(parse_name($filePath['extension'], 1));//设置类型的读取器
+        $objReader = IOFactory::createReader($readerType);//设置类型的读取器
         $objReader->setReadDataOnly(true);
-        $spreadsheet = $objReader->load($filePath['full_url']); //载入excel表格
+        $spreadsheet = $objReader->load($filePath); //载入excel表格
 //      $sheetCount =  $spreadsheet->getSheetCount(); //获取sheet索引 总数
         $worksheet = $spreadsheet->getSheet($sheetIndex);
         $highestRow = $worksheet->getHighestRow(); // 总行数

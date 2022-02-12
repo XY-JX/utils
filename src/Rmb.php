@@ -12,7 +12,7 @@ namespace xy_jx\Utils;
 
 class Rmb
 {
-    public static function rmbCapital($amount)
+    public static function rmbCapital($amount): string
     {
         $capitalNumbers = [
             '零', '壹', '贰', '叁', '肆', '伍', '陆', '柒', '捌', '玖',
@@ -67,20 +67,20 @@ class Rmb
         }
 
         if (!$result) {
-            array_push($result, $capitalNumbers[0]);
+            $result[] = $capitalNumbers[0];
         }
 
-        array_push($result, '圆');
+        $result[] = '圆';
 
         if (!$decimal) {
-            array_push($result, '整');
+            $result[] = '整';
         }
 
         // 转换小数位
         $decimalNumbers = $decimal ? str_split($decimal) : [];
         foreach ($decimalNumbers as $key => $number) {
-            array_push($result, $capitalNumbers[$number]);
-            array_push($result, $decimalUnits[$key]);
+            $result[] = $capitalNumbers[$number];
+            $result[] = $decimalUnits[$key];
         }
 
         if (strpos((string)$amount, '-') === 0) {

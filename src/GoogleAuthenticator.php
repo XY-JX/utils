@@ -14,15 +14,15 @@ class GoogleAuthenticator
 {
     protected static $_codeLength = 6;
 
+
     /**
      * Create new secret. (创建新秘密)
      * 16 characters, randomly chosen from the allowed base32 characters.
-     *
      * @param int $secretLength
-     *
      * @return string
+     * @throws \Exception
      */
-    public static function createSecret($secretLength = 32)
+    public static function createSecret(int $secretLength = 32): string
     {
         $validChars = self::_getBase32LookupTable();
 
@@ -58,10 +58,9 @@ class GoogleAuthenticator
      * 用给定的秘密和时间点计算验证码。
      * @param string $secret
      * @param int|null $timeSlice
-     *
      * @return string
      */
-    public static function getCode($secret, $timeSlice = null)
+    public static function getCode(string $secret, int $timeSlice = null): string
     {
         if ($timeSlice === null) {
             $timeSlice = floor(time() / 30);
@@ -94,12 +93,11 @@ class GoogleAuthenticator
      * 从google图表中获取图像的QR码URL
      * @param string $name
      * @param string $secret
-     * @param string $title
+     * @param string|null $title
      * @param array $params
-     *
      * @return string
      */
-    public static function getQRCodeGoogleUrl($name, $secret, $title = null, $params = array())
+    public static function getQRCodeGoogleUrl(string $name, string $secret, string $title = null, array $params = array()): string
     {
         $width = !empty($params['width']) && (int)$params['width'] > 0 ? (int)$params['width'] : 200;
         $height = !empty($params['height']) && (int)$params['height'] > 0 ? (int)$params['height'] : 200;
@@ -120,10 +118,9 @@ class GoogleAuthenticator
      * @param string $code
      * @param int $discrepancy This is the allowed time drift in 30 second units (8 means 4 minutes before or after) 1*30 秒验证区间
      * @param int|null $currentTimeSlice time slice if we want use other that time()
-     *
      * @return bool
      */
-    public static function verifyCode($secret, $code, $discrepancy = 1, $currentTimeSlice = null)
+    public static function verifyCode(string $secret, string $code, int $discrepancy = 1, int $currentTimeSlice = null): bool
     {
         if ($currentTimeSlice === null) {
             $currentTimeSlice = floor(time() / 30);
@@ -147,10 +144,9 @@ class GoogleAuthenticator
      * Set the code length, should be >=6.
      * 设置验证码的长度，应大于等于6
      * @param int $length
-     *
      * @return PHPGangsta_GoogleAuthenticator
      */
-    public static function setCodeLength($length)
+    public static function setCodeLength(int $length)
     {
         self::$_codeLength = $length;
 
@@ -209,7 +205,7 @@ class GoogleAuthenticator
      * 获取包含所有32个字符的数组，以便从base32解码/编码到base32
      * @return array
      */
-    protected static function _getBase32LookupTable()
+    protected static function _getBase32LookupTable(): array
     {
         return array(
             'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', //  7
@@ -230,7 +226,7 @@ class GoogleAuthenticator
      *
      * @return bool True if the two strings are identical
      */
-    private static function timingSafeEquals($safeString, $userString)
+    private static function timingSafeEquals(string $safeString, string $userString): bool
     {
         if (function_exists('hash_equals')) {
             return hash_equals($safeString, $userString);

@@ -30,7 +30,7 @@ class Encryption
      * @param string $iv
      * @return array
      */
-    public static function decrypt(string $data, string $iv = '')
+    public static function decrypt(string $data, string $iv = ''): array
     {
         return json_decode(openssl_decrypt($data, self::$config['method'], self::$config['key'], self::$config['options'], $iv ?: self::$config['iv']), true);
     }
@@ -52,7 +52,7 @@ class Encryption
      * @param string $iv
      * @return array
      */
-    public static function longDecrypt(string $encryptedData, string $iv = '')
+    public static function longDecrypt(string $encryptedData, string $iv = ''): array
     {
         $result = '';
         foreach (str_split($encryptedData, 880) as $chunk) {
@@ -65,9 +65,9 @@ class Encryption
      * 加密
      * @param array $encryptedData
      * @param string $iv
-     * @return array
+     * @return string
      */
-    public static function longEncrypt(array $encryptedData, string $iv = '')
+    public static function longEncrypt(array $encryptedData, string $iv = ''): string
     {
         $result = '';
         foreach (str_split(json_encode($encryptedData), 660) as $chunk) {

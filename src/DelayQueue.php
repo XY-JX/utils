@@ -20,6 +20,7 @@ class DelayQueue
      * 构造
      * @param array $config host:地址（127.0.0.1） port:端口（6379） timeout:超时时间（秒） password:密码 select:数据库
      * @param string $queue 队列名称
+     * @throws \Exception
      */
     public function __construct(array $config = [], string $queue = 'list')
     {
@@ -33,7 +34,7 @@ class DelayQueue
      * @param $value
      * @return int
      */
-    public static function del($value)
+    public static function del($value): int
     {
         return self::$redis->zRem(self::$key, $value);
     }
@@ -43,7 +44,7 @@ class DelayQueue
      * @param int $limit 记录数默认1
      * @return array
      */
-    public static function get($limit = 1)
+    public static function get(int $limit = 1): array
     {
         //获取任务，以0和当前时间为区间，返回（$limit）条记录
         return self::$redis->zRangeByScore(self::$key, 0, time(), ['limit' => [0, $limit]]);
@@ -56,7 +57,7 @@ class DelayQueue
      * @param array $data 任务参数
      * @return int
      */
-    public static function add(string $name, int $time, array $data)
+    public static function add(string $name, int $time, array $data): int
     {
         //添加任务，以时间作为score，对任务队列按时间从小到大排序
         return self::$redis->zAdd(
@@ -75,7 +76,7 @@ class DelayQueue
      * @param int $limit
      * @return array
      */
-    public static function getData($limit = 1)
+    public static function getData(int $limit = 1): array
     {
         $return = [];
         $task = self::get($limit);

@@ -22,6 +22,7 @@ class Openssl
      * @param string $publicKeyFile 证书地址
      * @param string $privateKeyFile 证书地址
      * @param int $level 钥位数 1024 2048 4096
+     * @throws Exception
      */
     public function __construct(string $publicKeyFile = __DIR__ . '/cert/pub.key', string $privateKeyFile = __DIR__ . '/cert/pri.key', int $level = 4096)
     {
@@ -50,10 +51,9 @@ class Openssl
     /**
      * 私钥加密
      * @param array $data
-     * @param int $level
      * @return string
      */
-    public static function encrypt(array $data)
+    public static function encrypt(array $data): string
     {
         $crypto = '';
         foreach (str_split(json_encode($data), self::level()[0]) as $chunk) {
@@ -66,7 +66,6 @@ class Openssl
     /**
      * 公钥解密
      * @param string $encrypted
-     * @param int $level
      * @return mixed
      */
     public static function decrypt(string $encrypted)
@@ -76,6 +75,6 @@ class Openssl
             openssl_public_decrypt($chunk, $decrypted, self::$public_key);//私钥加密的内容通过公钥可用解密出来
             $crypto .= $decrypted;
         }
-        return json_decode($crypto,true);
+        return json_decode($crypto, true);
     }
 }

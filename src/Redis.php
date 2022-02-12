@@ -76,9 +76,9 @@ class Redis
 
     /**
      * 返回句柄对象，可执行其它高级方法
-     * @return \Predis\Client|\Redis
+     * @return \Redis
      */
-    public static function handler()
+    public static function handler(): \Redis
     {
         return self::$handler;
     }
@@ -90,7 +90,7 @@ class Redis
      * @param string $time 时间范围 s m h d
      * @return bool
      */
-    public static function restrict(string $key, int $limit = 3, string $time = 's')
+    public static function restrict(string $key, int $limit = 3, string $time = 's'): bool
     {
         $key = 'throttle_:' . $key;
         $count = self::$handler->get($key);

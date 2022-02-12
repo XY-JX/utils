@@ -13,7 +13,7 @@ namespace xy_jx\Utils;
 class Sundry
 {
 
-    public static function randomCode($limit = 4)
+    public static function randomCode($limit = 4): string
     {
         return strtoupper(substr(md5(uniqid()), 8, $limit));
     }
@@ -22,7 +22,7 @@ class Sundry
      * 生成一个id
      * @return string
      */
-    public static function orderNo()
+    public static function orderNo(): string
     {
         return date('YmdHis') . mt_rand(10, 99) . mt_rand(10, 99);
     }
@@ -34,7 +34,7 @@ class Sundry
      * @param float $distance 单位：km
      * @return array
      */
-    public static function locationRange($lng, $lat, $distance = 2)
+    public static function locationRange($lng, $lat, $distance = 2): array
     {
         $earthRadius = 6378.137;//单位km
         $d_lng = 2 * asin(sin($distance / (2 * $earthRadius)) / cos(deg2rad($lat)));
@@ -57,7 +57,7 @@ class Sundry
      * @param $lat2 纬度
      * @return float 距离：m
      */
-    public static function getDistance($lng1, $lat1, $lng2, $lat2)
+    public static function getDistance($lng1, $lat1, $lng2, $lat2): float
     {
         $radLat1 = deg2rad($lat1);//deg2rad()函数将角度转换为弧度
         $radLat2 = deg2rad($lat2);
@@ -77,7 +77,7 @@ class Sundry
      * @param $lat2 纬度
      * @return string 距离：km,m
      */
-    public static function distance($lng1, $lat1, $lng2, $lat2)
+    public static function distance($lng1, $lat1, $lng2, $lat2): string
     {
         $m = self::getDistance($lng1, $lat1, $lng2, $lat2);
         if ($m > 1000) {
@@ -92,7 +92,7 @@ class Sundry
      * @param $arr
      * @return string
      */
-    public static function arrToXml($arr)
+    public static function arrToXml($arr): string
     {
         if (!is_array($arr) || count($arr) == 0) return '';
         $xml = "<xml>";
@@ -114,22 +114,21 @@ class Sundry
      */
     public static function xmlToArr($xml)
     {
-        $array_data = json_decode(json_encode(simplexml_load_string($xml, 'SimpleXMLElement', LIBXML_NOCDATA)), true);
-        return $array_data;
+        return json_decode(json_encode(simplexml_load_string($xml, 'SimpleXMLElement', LIBXML_NOCDATA)), true);
     }
 
     /**
-     * 生成二维码
      * @param string $text 内容
-     * @param false $filename 文件名
+     * @param $filename 文件名
      * @param string $level 等级3 L M Q H
      * @param int $size 大小
      * @param int $margin 边框
-     * @param false $saveandprint
+     * @param bool $saveAndPrint 保存并打印
+     * @return void
      */
-    public static function qrcode(string $text, $filename = false, $level = 'L', $size = 4, $margin = 1, $saveandprint = false)
+    public static function qrcode(string $text, $filename = false, string $level = 'L', int $size = 4, int $margin = 1, bool $saveAndPrint = false)
     {
-        return \xy_jx\Utils\bin\QRcode::png($text, $filename, $level, $size, $margin, $saveandprint);
+        return \xy_jx\Utils\bin\QRcode::png($text, $filename, $level, $size, $margin, $saveAndPrint);
     }
 
     /**
@@ -138,9 +137,8 @@ class Sundry
      * @param string $level 等级3 L M Q H
      * @param int $size 大小
      * @param int $margin 边框
-     * @param false $saveandprint
      */
-    public static function base64Qrcode(string $text, $level = 'L', $size = 4, $margin = 1)
+    public static function base64Qrcode(string $text, string $level = 'L', int $size = 4, int $margin = 1): string
     {
         ob_start();
         self::qrcode($text, false, $level, $size, $margin);
@@ -156,11 +154,11 @@ class Sundry
      * @param string $secretKey 私钥
      * @return bool
      */
-    public static function wechatVerify(array $data, string $secretKey)
+    public static function wechatVerify(array $data, string $secretKey): bool
     {
         $sign = $data['sign'];
         unset($data['sign']);
-        return $sign == self::wechatSign($data, $secretKey) ? true : false;
+        return $sign == self::wechatSign($data, $secretKey);
     }
 
     /**
@@ -169,7 +167,7 @@ class Sundry
      * @param string $secretKey 私钥
      * @return string
      */
-    public static function wechatSign(array $data, string $secretKey)
+    public static function wechatSign(array $data, string $secretKey): string
     {
         ksort($data);
         $SignTemp = urldecode(http_build_query($data)) . '&key=' . $secretKey;
@@ -204,12 +202,14 @@ class Sundry
     }
 
     /**
-     * redis
+     * 使用Redis
      * @param array $options redis配置
-     * @return \Predis\Client|\Redis
+     * @return \Redis
+     * @throws \Exception
      */
-    public static function redis(array $options = [])
+    public static function redis(array $options = []): \Redis
     {
+
         $Redis = new Redis($options);
         return $Redis::handler();
     }
@@ -220,8 +220,10 @@ class Sundry
      * @param string $key ip|uid
      * @param int $limit 限制次数
      * @param string $time 时间范围 s m h d
+     * @return bool
+     * @throws \Exception
      */
-    public static function restrict(array $options, string $key, int $limit = 3, string $time = 's')
+    public static function restrict(array $options, string $key, int $limit = 3, string $time = 's'): bool
     {
         $Redis = new Redis($options);
         return $Redis::restrict($key, $limit, $time);
@@ -236,7 +238,7 @@ class Sundry
      * @param string $id
      * @return array
      */
-    public static function recursion($data, $pid = 0, $child = 'child', $pfield = 'pid', $id = 'id')
+    public static function recursion($data, int $pid = 0, string $child = 'child', string $pfield = 'pid', string $id = 'id'): array
     {
         $arr = [];
         foreach ($data as $key => $val) {
@@ -256,7 +258,7 @@ class Sundry
      * @param null $index_key 作为返回数组的索引的列
      * @return array
      */
-    public static function arrayColumns(array $array, array $keys = [], $index_key = null)
+    public static function arrayColumns(array $array, array $keys = [], $index_key = null): array
     {
         $result = [];
         if (!$array) return $result;

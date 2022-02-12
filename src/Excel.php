@@ -52,7 +52,7 @@ class Excel
      */
     private static function initialize()
     {
-        if (extension_loaded('Spreadsheet')) {
+        if (class_exists('PhpOffice\PhpSpreadsheet\Spreadsheet')) {
             self::$spreadsheet = new Spreadsheet();
             self::$worksheet = self:: $spreadsheet->getActiveSheet();
             self::$worksheet->getDefaultColumnDimension()->setWidth(20);//设置默认宽度

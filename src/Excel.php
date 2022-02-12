@@ -1,13 +1,19 @@
 <?php
-
+// +----------------------------------------------------------------------
+// | DATE: 2022/2/9 19:43
+// +----------------------------------------------------------------------
+// | Author: xy <zhangschooi@qq.com>
+// +----------------------------------------------------------------------
+// | Notes:  Excel
+// +----------------------------------------------------------------------
 namespace xy_jx\Utils;
 
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 
 /**
- * Class Excel 正常导出
- * export 导出需要安装额外扩展  composer require phpoffice/phpspreadsheet
+ * Class Excel 出于某些原因请手动安装扩展
+ * export 相关需要安装额外扩展  composer require phpoffice/phpspreadsheet
  */
 class Excel
 {
@@ -42,13 +48,18 @@ class Excel
 
     /**
      * 初始化
+     * @throws \Exception
      */
     private static function initialize()
     {
-        self::$spreadsheet = new Spreadsheet();
-        self::$worksheet = self:: $spreadsheet->getActiveSheet();
-        self::$worksheet->getDefaultColumnDimension()->setWidth(20);//设置默认宽度
-        self::$worksheet->getDefaultRowDimension()->setRowHeight(30);//设置默认行高
+        if (extension_loaded('Spreadsheet')) {
+            self::$spreadsheet = new Spreadsheet();
+            self::$worksheet = self:: $spreadsheet->getActiveSheet();
+            self::$worksheet->getDefaultColumnDimension()->setWidth(20);//设置默认宽度
+            self::$worksheet->getDefaultRowDimension()->setRowHeight(30);//设置默认行高
+        } else {
+            throw new \Exception('not installed : PhpOffice\PhpSpreadsheet , solution : composer require phpoffice/phpspreadsheet');
+        }
 
     }
 

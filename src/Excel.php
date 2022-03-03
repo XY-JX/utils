@@ -42,7 +42,7 @@ class Excel
         'font' => [
             'name' => '黑体',
             'bold' => true,
-            'size' => 16
+            'size' => 14
         ]
     ];
 
@@ -56,7 +56,7 @@ class Excel
             self::$spreadsheet = new Spreadsheet();
             self::$worksheet = self:: $spreadsheet->getActiveSheet();
             self::$worksheet->getDefaultColumnDimension()->setWidth(16);//设置默认宽度
-            self::$worksheet->getDefaultRowDimension()->setRowHeight(20);//设置默认行高
+            self::$worksheet->getDefaultRowDimension()->setRowHeight(16);//设置默认行高
         } else {
             throw new \Exception('not installed : PhpOffice\PhpSpreadsheet , solution : composer require phpoffice/phpspreadsheet');
         }
@@ -82,7 +82,7 @@ class Excel
         }
 
         self::$worksheet->setTitle(self::$title); //设置导出文件名
-        self::$worksheet->getRowDimension(self::$Prow)->setRowHeight(30);//设置第一行行高
+        self::$worksheet->getRowDimension(self::$Prow)->setRowHeight(22);//设置第一行行高
         $titleMerge = reset(self::$width_row) . self::$Prow . ':' . end(self::$width_row) . self::$Prow;
         self::$worksheet->mergeCells($titleMerge);
         self::$worksheet->getStyle($titleMerge)->applyFromArray(self::$style);

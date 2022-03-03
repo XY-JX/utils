@@ -135,14 +135,20 @@ class Excel
 
     /**
      * 导出
+     * @param string $writerType 导出类 Xls,Xlsx,Ods,Csv,Html,Tcpdf,Dompdf,Mpdf
+     * @param bool $browser 是否浏览器导出  浏览器|信息流
+     * @param string $filename 保存文件名
+     * @return void
      */
-    public function save()
+    public function save(string $writerType = 'Xlsx', bool $browser = true, string $filename = 'php://output')
     {
-        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-        header('Content-Disposition: attachment;filename=' . self:: $title . '.xlsx');
-        header('Cache-Control: max-age=0');
-        $write = IOFactory::createWriter(self::$spreadsheet, 'Xlsx');
-        $write->save('php://output');
+        if ($browser) {
+            header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+            header('Content-Disposition: attachment;filename=' . self:: $title . '.' . strtolower($writerType));
+            header('Cache-Control: max-age=0');
+        }
+        $write = IOFactory::createWriter(self::$spreadsheet, $writerType);
+        $write->save($filename);
     }
 
     /**

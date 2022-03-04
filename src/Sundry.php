@@ -37,10 +37,8 @@ class Sundry
     public static function locationRange($lng, $lat, $distance = 2): array
     {
         $earthRadius = 6378.137;//单位km
-        $d_lng = 2 * asin(sin($distance / (2 * $earthRadius)) / cos(deg2rad($lat)));
-        $d_lng = rad2deg($d_lng);
-        $d_lat = $distance / $earthRadius;
-        $d_lat = rad2deg($d_lat);
+        $d_lng = rad2deg(2 * asin(sin($distance / (2 * $earthRadius)) / cos(deg2rad($lat))));
+        $d_lat = rad2deg($distance / $earthRadius);
         return array(
             'lat_start' => round($lat - $d_lat, 7),//纬度开始
             'lat_end' => round($lat + $d_lat, 7),//纬度结束

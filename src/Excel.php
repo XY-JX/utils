@@ -55,8 +55,8 @@ class Excel
         if (class_exists('PhpOffice\PhpSpreadsheet\Spreadsheet')) {
             self::$spreadsheet = new Spreadsheet();
             self::$worksheet = self:: $spreadsheet->getActiveSheet();
-            self::$worksheet->getDefaultColumnDimension()->setWidth(16);//设置默认宽度
-            self::$worksheet->getDefaultRowDimension()->setRowHeight(16);//设置默认行高
+            self::$worksheet->getDefaultColumnDimension()->setWidth(12);//设置默认宽度
+            //self::$worksheet->getDefaultRowDimension()->setRowHeight(16);//设置默认行高
         } else {
             throw new \Exception('not installed : PhpOffice\PhpSpreadsheet , solution : composer require phpoffice/phpspreadsheet');
         }

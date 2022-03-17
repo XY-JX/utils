@@ -230,19 +230,19 @@ class Sundry
     /**
      * 递归无限级分类
      * @param $data
-     * @param int $pid 父id
+     * @param int $value 父id初始值
      * @param string $child 子分组
-     * @param string $pfield 父字段
-     * @param string $id
+     * @param string $pid 父字段
+     * @param string $id 子字段
      * @return array
      */
-    public static function recursion($data, int $pid = 0, string $child = 'child', string $pfield = 'pid', string $id = 'id'): array
+    public static function recursion($data, int $value = 0, string $child = 'child', string $pid = 'pid', string $id = 'id'): array
     {
         $arr = [];
         foreach ($data as $key => $val) {
-            if ($val[$pfield] == $pid) {
+            if ($val[$pid] == $value) {
                 unset($data[$key]);
-                $val[$child] = self::recursion($data, $val[$id], $child, $pfield, $id);
+                $val[$child] = self::recursion($data, $val[$id], $child, $pid, $id);
                 $arr[] = $val;
             }
         }

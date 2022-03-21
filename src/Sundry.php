@@ -9,7 +9,6 @@
 
 namespace xy_jx\Utils;
 
-
 class Sundry
 {
 
@@ -116,6 +115,7 @@ class Sundry
     }
 
     /**
+     * 生成二维码 （建议前端生成）
      * @param string $text 内容
      * @param $filename 文件名
      * @param string $level 等级3 L M Q H
@@ -130,7 +130,7 @@ class Sundry
     }
 
     /**
-     * 生成base64二维码
+     * 生成base64二维码 （建议前端生成）
      * @param string $text 内容
      * @param string $level 等级3 L M Q H
      * @param int $size 大小

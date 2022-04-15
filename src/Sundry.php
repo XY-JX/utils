@@ -286,7 +286,7 @@ class Sundry
      * @param int $result 需要转成的进制（最大支持62）
      * @return false|int|string
      */
-    public static function convert($num, int $current = 10, int $result = 32)
+    public static function convert($num, int $current = 10, int $result = 32): bool|int|string
     {
         if ($current > 62 || $result > 62) return false;
         if ($current > 32 || $result > 32) {
@@ -310,5 +310,42 @@ class Sundry
             }
         }
         return base_convert($num, $current, $result);
+    }
+
+    /**
+     * 生成密钥
+     * @param $config $config = [
+     *                              'config' => '/opt/service/php7.3.9/extras/ssl/openssl.cnf', // 定位至你的openssl.cnf文件
+     *                              'digest_alg' => 'SHA512', // openssl_get_md_methods() 的返回值是可以使用的加密方法列表
+     *                              'private_key_bits' => 4096,//512,1024,2048,4096  （不能使用字符型）
+     *                           ]
+     * @param $public_key 'public_key.cer' 此参数如果有值生成文件,无值返回公钥
+     * @param $private_key 'private_key.cer' 此参数如果有值生成文件,无值返回私钥
+     * @return bool|string
+     */
+    public static function generateKey($config, &$public_key, &$private_key): bool|string
+    {
+        if (!$resource = openssl_pkey_new($config)) return '配置参数错误';
+        // 生成私钥
+        openssl_pkey_export($resource, $privateKey, null, $config);
+        // 生成公钥
+        $details = openssl_pkey_get_details($resource);
+        //生成公钥文件
+        if ($public_key) {
+            $fp = fopen($public_key, "w");
+            fwrite($fp, $details['key']);
+            fclose($fp);
+        } else {
+            $public_key = $details['key'];
+        }
+        //生成密钥文件
+        if ($private_key) {
+            $fp = fopen($private_key, "w");
+            fwrite($fp, $privateKey);
+            fclose($fp);
+        } else {
+            $private_key = $privateKey;
+        }
+        return true;
     }
 }

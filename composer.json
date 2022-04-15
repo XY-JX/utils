@@ -2,7 +2,8 @@
     "name": "xy_jx/utils",
     "description": "utils",
     "require": {
-        "php": ">=7.3.0"
+        "php": ">=7.3.0",
+        "ext-openssl": "*"
     },
     "license": "MIT",
     "autoload": {

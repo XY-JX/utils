@@ -281,6 +281,7 @@ class Sundry
     }
 
     /**
+     * 进制转换
      * @param mixed $num 需要转换的值
      * @param int $current 当前进制
      * @param int $result 需要转成的进制（最大支持62）

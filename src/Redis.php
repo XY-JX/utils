@@ -95,10 +95,7 @@ class Redis
         $key = 'throttle_:' . $key;
         $count = self::$handler->get($key);
         if ($count) {
-            self::$handler->incr($key);  //键值递增
-            if ($count + 1 > $limit) {
-                return false;
-            }
+            if (self::$handler->incr($key) > $limit) return false; //键值递增,大于限制
         } else {
             self::$handler->set($key, 1, ['nx', 'ex' => self::$duration[$time]]);
         }

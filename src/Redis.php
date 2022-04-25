@@ -93,8 +93,7 @@ class Redis
     public static function restrict(string $key, int $limit = 3, string $time = 's'): bool
     {
         $key = 'throttle_:' . $key;
-        $count = self::$handler->get($key);
-        if ($count) {
+        if (self::$handler->get($key)) {
             if (self::$handler->incr($key) > $limit) return false; //键值递增,大于限制
         } else {
             self::$handler->set($key, 1, ['nx', 'ex' => self::$duration[$time]]);

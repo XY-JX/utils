@@ -285,9 +285,9 @@ class Sundry
      * @param mixed $num 需要转换的值
      * @param int $current 当前进制
      * @param int $result 需要转成的进制（最大支持62）
-     * @return false|int|string
+     * @return bool|int|string
      */
-    public static function convert($num, int $current = 10, int $result = 32): bool|int|string
+    public static function convert($num, int $current = 10, int $result = 32)
     {
         if ($current > 62 || $result > 62) return false;
         if ($current > 32 || $result > 32) {
@@ -324,7 +324,7 @@ class Sundry
      * @param $private_key 'private_key.cer' 此参数如果有值生成文件,无值返回私钥
      * @return bool|string
      */
-    public static function generateKey($config, &$public_key, &$private_key): bool|string
+    public static function generateKey($config, &$public_key, &$private_key)
     {
         if (!$resource = openssl_pkey_new($config)) return '配置参数错误';
         // 生成私钥

@@ -32,7 +32,7 @@ class Encryption
      */
     public static function decrypt(string $data, string $iv = ''): array
     {
-        return json_decode(openssl_decrypt($data, self::$config['method'], self::$config['key'], self::$config['options'], $iv ?: self::$config['iv']), true);
+        return json_decode(openssl_decrypt($data, self::$config['method'], self::$config['key'], self::$config['options'], $iv ?: self::$config['iv']), true) ?? [];
     }
 
     /***
@@ -58,7 +58,7 @@ class Encryption
         foreach (str_split($encryptedData, 880) as $chunk) {
             $result .= openssl_decrypt($chunk, self::$config['method'], self::$config['key'], self::$config['options'], $iv ?: self::$config['iv']);
         }
-        return json_decode($result, true);
+        return json_decode($result, true) ?? [];
     }
 
     /**

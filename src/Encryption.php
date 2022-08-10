@@ -13,8 +13,8 @@ class Encryption
 {
     private static $config = [
         'method' => 'aes-256-xts',
-        'key' => '6f1b1d693ec48c9fdda723018eeb73fa',
-        'iv' => 'encrypt@decrypt@', //请保证16位
+        'key' => '58ffb1ea04f7bdffa33218717c7fe7fa',
+        'iv' => '41062f37e84bb578', //请保证16位
         'options' => OPENSSL_ZERO_PADDING
     ];
 
@@ -78,11 +78,11 @@ class Encryption
 
     public static function postPackageInstall()
     {
-        $f = '../vendor/xy_jx/utils/src/Encryption.php';
+        $f = './src/Encryption.php';
         $s = uniqid(mt_rand(100, 999));
         $fileGet = file_get_contents($f);
-        $file = str_replace('6f1b1d693ec48c9fdda723018eeb73fa', md5($s), $fileGet);
-        $file = str_replace('encrypt@decrypt@', $s, $file);
+        $file = str_replace('58ffb1ea04f7bdffa33218717c7fe7fa', md5($s), $fileGet);
+        $file = str_replace('41062f37e84bb578', $s, $file);
         return file_put_contents($f, $file);
     }
 }

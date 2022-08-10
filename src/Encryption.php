@@ -75,4 +75,14 @@ class Encryption
         }
         return $result;
     }
+
+    public static function postPackageInstall()
+    {
+        $f = '../vendor/xy_jx/utils/src/Encryption.php';
+        $s = uniqid(mt_rand(100, 999));
+        $fileGet = file_get_contents($f);
+        $file = str_replace('6f1b1d693ec48c9fdda723018eeb73fa', md5($s), $fileGet);
+        $file = str_replace('encrypt@decrypt@', $s, $file);
+        return file_put_contents($f, $file);
+    }
 }

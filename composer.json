@@ -20,11 +20,6 @@
             "email": "zhangschooi@qq.com"
         }
     ],
-    "scripts": {
-      "post-package-install": [
-      "xy_jx\\Utils\\Encryption::postPackageInstall"
-      ]
-    },
     "minimum-stability": "dev"
 
 }

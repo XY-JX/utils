@@ -13,8 +13,8 @@ class Encryption
 {
     private static $config = [
         'method' => 'aes-256-xts',
-        'key' => '6f1b1d693ec48c9fdda723018eeb73fa',
-        'iv' => 'encrypt@decrypt@', //请保证16位
+        'key' => '1dfc5ac960771fc943bdfa1ad5ebdfe7',
+        'iv' => '58162f5cea907ce1', //请保证16位
         'options' => OPENSSL_ZERO_PADDING
     ];
 
@@ -76,13 +76,17 @@ class Encryption
         return $result;
     }
 
-    public static function postPackageInstall()
+    /**
+     * 重置密钥 不建议使用
+     * @return false|int
+     */
+    public static function resetKey()
     {
         $f = './src/Encryption.php';
         $s = uniqid(mt_rand(100, 999));
         $fileGet = file_get_contents($f);
-        $file = str_replace('6f1b1d693ec48c9fdda723018eeb73fa', md5($s), $fileGet);
-        $file = str_replace('encrypt@decrypt@', $s, $file);
+        $file = str_replace(self::$config['key'], md5($s), $fileGet);
+        $file = str_replace(self::$config['iv'], $s, $file);
         return file_put_contents($f, $file);
     }
 }

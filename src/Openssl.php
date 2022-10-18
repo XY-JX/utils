@@ -24,7 +24,7 @@ class Openssl
      * @param int $level 钥位数 1024 2048 4096
      * @throws Exception
      */
-    public function __construct(string $publicKeyFile = __DIR__ . '/cert/pub.key', string $privateKeyFile = __DIR__ . '/cert/pri.key', int $level = 4096)
+    public function __construct(string $publicKeyFile = __DIR__ . '/../cert/pub.key', string $privateKeyFile = __DIR__ . '/../cert/pri.key', int $level = 4096)
     {
         try {
             self::$public_key = file_get_contents($publicKeyFile);

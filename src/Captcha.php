@@ -407,7 +407,7 @@ class Captcha
         $y = intval(($height - $textHeight) / 2) + $size;
 
         if (!$this->textColor) {
-            $textColor = array($this->rand(0, 150), $this->rand(0, 150), $this->rand(0, 150));
+            $textColor = [$this->rand(0, 150), $this->rand(0, 150), $this->rand(0, 150)];
         } else {
             $textColor = $this->textColor;
         }
@@ -780,11 +780,11 @@ class Captcha
      */
     protected function getRGB($col)
     {
-        return array(
+        return [
             (int)($col >> 16) & 0xff,
             (int)($col >> 8) & 0xff,
             (int)($col) & 0xff,
-        );
+        ];
     }
 
     /**

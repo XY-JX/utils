@@ -65,7 +65,7 @@ class DelayQueue
             self::$key,
             $now + $delay,
             json_encode([
-                'id' => $now . '-' . mt_rand(1000, 9999),
+                'id' => $now . '-' . mt_rand(100000, 999999),
                 'delay' => $delay,
                 'attempts' => $attempts,
                 'data' => $data

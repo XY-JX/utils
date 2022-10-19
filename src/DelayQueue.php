@@ -52,21 +52,23 @@ class DelayQueue
 
     /**
      * 添加需要执行的任务
-     * @param string $name 任务名称
-     * @param int $time 任务执行时间
      * @param array $data 任务参数
+     * @param int $delay 任务执行时间
+     * @param int $attempts 尝试次数
      * @return int
      */
-    public static function add(string $name, int $time, array $data): int
+    public static function add(array $data, int $delay = 0, int $attempts = 0): int
     {
         //添加任务，以时间作为score，对任务队列按时间从小到大排序
+        $now = time();
         return self::$redis->zAdd(
             self::$key,
-            $time,
+            $now + $delay,
             json_encode([
-                'name' => $name,
-                'time' => $time,
-                'data' => $data,
+                'id' => $now . '-' . mt_rand(1000, 9999),
+                'delay' => $delay,
+                'attempts' => $attempts,
+                'data' => $data
             ], JSON_UNESCAPED_UNICODE)
         );
     }

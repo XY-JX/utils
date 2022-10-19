@@ -55,22 +55,23 @@ class DelayQueue
      * @param array $data 任务参数
      * @param int $delay 任务执行时间
      * @param int $attempts 尝试次数
-     * @return int
+     * @return string
      */
-    public static function add(array $data, int $delay = 0, int $attempts = 0): int
+    public static function add(array $data, int $delay = 0, int $attempts = 0): string
     {
         //添加任务，以时间作为score，对任务队列按时间从小到大排序
         $now = time();
-        return self::$redis->zAdd(
-            self::$key,
-            $now + $delay,
+        $id = $now . '-' . mt_rand(100000, 999999);
+        if (self::$redis->zAdd(self::$key, $now + $delay,
             json_encode([
-                'id' => $now . '-' . mt_rand(100000, 999999),
+                'id' => $id,
                 'delay' => $delay,
                 'attempts' => $attempts,
                 'data' => $data
             ], JSON_UNESCAPED_UNICODE)
-        );
+        ))
+            return $id;
+        return '';
     }
 
     /**

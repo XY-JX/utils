@@ -160,14 +160,7 @@ class Captchas
      */
     protected function generate(): string
     {
-        $code = '';
-        $chars = str_split($this->charset);
-
-        for ($i = 0; $i < $this->length; $i++) {
-            $code .= $chars[array_rand($chars)];
-        }
-
-        return $code;
+        return rand_string($this->length, $this->charset);
     }
 
     public function toPhrase($phrase)

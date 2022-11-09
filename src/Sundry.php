@@ -11,21 +11,6 @@ namespace xy_jx\Utils;
 
 class Sundry
 {
-
-    public static function randomCode($limit = 4): string
-    {
-        return strtoupper(substr(md5(uniqid()), 8, $limit));
-    }
-
-    /**
-     * 生成一个id
-     * @return string
-     */
-    public static function orderNo(): string
-    {
-        return date('YmdHis') . mt_rand(10, 99) . mt_rand(10, 99);
-    }
-
     /**
      * 据传入的经纬度，和距离范围，返回所在距离范围内的经纬度的取值范围
      * @param $lng

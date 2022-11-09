@@ -55,9 +55,9 @@ class Captcha
      * 设置参数
      * @param $name
      * @param $val
-     * @return void|Captcha
+     * @return Captcha
      */
-    public function set($name, $val)
+    public function set($name, $val): Captcha
     {
         if (property_exists($this, $name))
             $this->{$name} = $val;
@@ -95,12 +95,7 @@ class Captcha
             $code = $x + $y;
             $code .= '';
         } else {
-            $characters = str_split($this->codeSet);
-
-            for ($i = 0; $i < $this->length; $i++) {
-                $value .= $characters[array_rand($characters)];
-            }
-
+            $value = rand_string($this->length, $this->codeSet);
             $code = mb_strtolower($value, 'UTF-8');
         }
 
@@ -249,13 +244,12 @@ class Captcha
      */
     protected function writeNoise(): void
     {
-        $codeSet = '0123456789abcdefghijkmlonpqrstuvwxyzABCDEFGHJKLMNPQRTUVWXY';
         for ($i = 0; $i < 10; $i++) {
             //杂点颜色
             $noiseColor = imagecolorallocate($this->im, mt_rand(150, 225), mt_rand(150, 225), mt_rand(150, 225));
             for ($j = 0; $j < 5; $j++) {
                 // 绘杂点
-                imagestring($this->im, 10, mt_rand(-5, $this->imageW), mt_rand(-5, $this->imageH), $codeSet[mt_rand(0, 48)], $noiseColor);
+                imagestring($this->im, 10, mt_rand(-5, $this->imageW), mt_rand(-5, $this->imageH), rand_string(1), $noiseColor);
             }
         }
     }

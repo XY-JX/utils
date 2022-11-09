@@ -122,8 +122,8 @@ class Captchas
     {
         foreach ($config as $key => $val) {
             if (property_exists($this, $key))
-                $this->{$key} = $val;
 
+                $this->{$key} = $val;
         }
     }
 
@@ -154,15 +154,6 @@ class Captchas
         return '';
     }
 
-    /**
-     * 生成短语
-     * @return string
-     */
-    protected function generate(): string
-    {
-        return rand_string($this->length, $this->charset);
-    }
-
     public function toPhrase($phrase)
     {
         return strtr(strtolower($phrase), '012', 'olz');
@@ -182,111 +173,6 @@ class Captchas
     public static function create($phrase = null)
     {
         return new self($phrase);
-    }
-
-    /**
-     * 在图像上绘制线条
-     */
-    protected function drawLine($image, $width, $height, $tcol = null)
-    {
-        if ($this->lineColor === null) {
-            $red = $this->rand(100, 255);
-            $green = $this->rand(100, 255);
-            $blue = $this->rand(100, 255);
-        } else {
-            $red = $this->lineColor[0];
-            $green = $this->lineColor[1];
-            $blue = $this->lineColor[2];
-        }
-
-        if ($tcol === null) {
-            $tcol = imagecolorallocate($image, $red, $green, $blue);
-        }
-
-        if ($this->rand(0, 1)) { // 水平的
-            $Xa = $this->rand(0, $width / 2);
-            $Ya = $this->rand(0, $height);
-            $Xb = $this->rand($width / 2, $width);
-            $Yb = $this->rand(0, $height);
-        } else { // 竖的
-            $Xa = $this->rand(0, $width);
-            $Ya = $this->rand(0, $height / 2);
-            $Xb = $this->rand(0, $width);
-            $Yb = $this->rand($height / 2, $height);
-        }
-        imagesetthickness($image, $this->rand(1, 3));
-        imageline($image, $Xa, $Ya, $Xb, $Yb, $tcol);
-    }
-
-    /**
-     * 应用一些后期效果
-     */
-    protected function postEffect($image)
-    {
-        if (!function_exists('imagefilter')) {
-            return;
-        }
-
-        if ($this->backgroundColor != null || $this->textColor != null) {
-            return;
-        }
-
-        // Negate ?    取消
-        if ($this->rand(0, 1) == 0) {
-            imagefilter($image, IMG_FILTER_NEGATE);
-        }
-
-        // Edge ?   边
-        if ($this->rand(0, 10) == 0) {
-            imagefilter($image, IMG_FILTER_EDGEDETECT);
-        }
-
-        // Contrast  明显的差异
-        imagefilter($image, IMG_FILTER_CONTRAST, $this->rand(-50, 30));
-
-        // Colorize  着色
-        if ($this->rand(0, 5) == 0) {
-            imagefilter($image, IMG_FILTER_COLORIZE, $this->rand(-80, 50), $this->rand(-80, 50), $this->rand(-80, 50));
-        }
-    }
-
-    /**
-     * 在图像上写入短语
-     */
-    protected function writePhrase($image, $phrase, $font, $width, $height)
-    {
-        $length = mb_strlen($phrase);
-        if ($length === 0) {
-            return \imagecolorallocate($image, 0, 0, 0);
-        }
-
-        // 获取文本大小和开始位置
-        $size = intval($width / $length) - $this->rand(0, 3) - 1;
-        $box = \imagettfbbox($size, 0, $font, $phrase);
-        $textWidth = $box[2] - $box[0];
-        $textHeight = $box[1] - $box[7];
-        $x = intval(($width - $textWidth) / 2);
-        $y = intval(($height - $textHeight) / 2) + $size;
-
-        if (!$this->textColor) {
-            $textColor = [$this->rand(0, 150), $this->rand(0, 150), $this->rand(0, 150)];
-        } else {
-            $textColor = $this->textColor;
-        }
-        $col = \imagecolorallocate($image, $textColor[0], $textColor[1], $textColor[2]);
-
-        // 用随机角度逐个书写字母
-        for ($i = 0; $i < $length; $i++) {
-            $symbol = mb_substr($phrase, $i, 1);
-            $box = \imagettfbbox($size, 0, $font, $symbol);
-            $w = $box[2] - $box[0];
-            $angle = $this->rand(-$this->maxAngle, $this->maxAngle);
-            $offset = $this->rand(-$this->maxOffset, $this->maxOffset);
-            \imagettftext($image, $size, $angle, $x, $y + $offset, $col, $font, $symbol);
-            $x += $w;
-        }
-
-        return $col;
     }
 
     /**
@@ -413,78 +299,6 @@ class Captchas
     }
 
     /**
-     * 获取字体路径
-     * @param $font
-     * @return string
-     */
-    protected function getFontPath($font)
-    {
-        static $fontPathMap = [];
-        if (!\class_exists(\Phar::class, false) || !\Phar::running()) {
-            return $font;
-        }
-
-        $tmpPath = sys_get_temp_dir() ?: '/tmp';
-        $filePath = "$tmpPath/" . basename($font);
-        clearstatcache();
-        if (!isset($fontPathMap[$font]) || !is_file($filePath)) {
-            file_put_contents($filePath, file_get_contents($font));
-            $fontPathMap[$font] = $filePath;
-        }
-        return $fontPathMap[$font];
-    }
-
-    /**
-     * 绘干扰线
-     */
-    public function distort($image, $width, $height, $bg)
-    {
-        $contents = imagecreatetruecolor($width, $height);
-        $X = $this->rand(0, $width);
-        $Y = $this->rand(0, $height);
-        $phase = $this->rand(0, 10);
-        $scale = 1.1 + $this->rand(0, 10000) / 30000;
-        for ($x = 0; $x < $width; $x++) {
-            for ($y = 0; $y < $height; $y++) {
-                $Vx = $x - $X;
-                $Vy = $y - $Y;
-                $Vn = sqrt($Vx * $Vx + $Vy * $Vy);
-
-                if ($Vn != 0) {
-                    $Vn2 = $Vn + 4 * sin($Vn / 30);
-                    $nX = $X + ($Vx * $Vn2 / $Vn);
-                    $nY = $Y + ($Vy * $Vn2 / $Vn);
-                } else {
-                    $nX = $X;
-                    $nY = $Y;
-                }
-                $nY = $nY + $scale * sin($phase + $nX * 0.2);
-
-                if ($this->interpolation) {
-                    $p = $this->interpolate(
-                        $nX - floor($nX),
-                        $nY - floor($nY),
-                        $this->getCol($image, floor($nX), floor($nY), $bg),
-                        $this->getCol($image, ceil($nX), floor($nY), $bg),
-                        $this->getCol($image, floor($nX), ceil($nY), $bg),
-                        $this->getCol($image, ceil($nX), ceil($nY), $bg)
-                    );
-                } else {
-                    $p = $this->getCol($image, round($nX), round($nY), $bg);
-                }
-
-                if ($p == 0) {
-                    $p = $bg;
-                }
-
-                imagesetpixel($contents, $x, $y, $p);
-            }
-        }
-
-        return $contents;
-    }
-
-    /**
      * 将Captcha保存到jpeg文件
      */
     public function save($filename, $quality = 90)
@@ -538,6 +352,192 @@ class Captchas
     public function output($quality = 90)
     {
         imagejpeg($this->contents, null, $quality);
+    }
+
+    /**
+     * 生成短语
+     * @return string
+     */
+    protected function generate(): string
+    {
+        return rand_string($this->length, $this->charset);
+    }
+
+    /**
+     * 在图像上绘制线条
+     */
+    protected function drawLine($image, $width, $height, $tcol = null)
+    {
+        if ($this->lineColor === null) {
+            $red = $this->rand(100, 255);
+            $green = $this->rand(100, 255);
+            $blue = $this->rand(100, 255);
+        } else {
+            $red = $this->lineColor[0];
+            $green = $this->lineColor[1];
+            $blue = $this->lineColor[2];
+        }
+
+        if ($tcol === null) {
+            $tcol = imagecolorallocate($image, $red, $green, $blue);
+        }
+
+        if ($this->rand(0, 1)) { // 水平的
+            $Xa = $this->rand(0, $width / 2);
+            $Ya = $this->rand(0, $height);
+            $Xb = $this->rand($width / 2, $width);
+            $Yb = $this->rand(0, $height);
+        } else { // 竖的
+            $Xa = $this->rand(0, $width);
+            $Ya = $this->rand(0, $height / 2);
+            $Xb = $this->rand(0, $width);
+            $Yb = $this->rand($height / 2, $height);
+        }
+        imagesetthickness($image, $this->rand(1, 3));
+        imageline($image, $Xa, $Ya, $Xb, $Yb, $tcol);
+    }
+
+    /**
+     * 应用一些后期效果
+     */
+    protected function postEffect($image)
+    {
+        if (!function_exists('imagefilter')) {
+            return;
+        }
+
+        if ($this->backgroundColor != null || $this->textColor != null) {
+            return;
+        }
+
+        // Negate ?    取消
+        if ($this->rand(0, 1) == 0) {
+            imagefilter($image, IMG_FILTER_NEGATE);
+        }
+
+        // Edge ?   边
+        if ($this->rand(0, 10) == 0) {
+            imagefilter($image, IMG_FILTER_EDGEDETECT);
+        }
+
+        // Contrast  明显的差异
+        imagefilter($image, IMG_FILTER_CONTRAST, $this->rand(-50, 30));
+
+        // Colorize  着色
+        if ($this->rand(0, 5) == 0) {
+            imagefilter($image, IMG_FILTER_COLORIZE, $this->rand(-80, 50), $this->rand(-80, 50), $this->rand(-80, 50));
+        }
+    }
+
+    /**
+     * 在图像上写入短语
+     */
+    protected function writePhrase($image, $phrase, $font, $width, $height)
+    {
+        $length = mb_strlen($phrase);
+        if ($length === 0) {
+            return \imagecolorallocate($image, 0, 0, 0);
+        }
+
+        // 获取文本大小和开始位置
+        $size = intval($width / $length) - $this->rand(0, 3) - 1;
+        $box = \imagettfbbox($size, 0, $font, $phrase);
+        $textWidth = $box[2] - $box[0];
+        $textHeight = $box[1] - $box[7];
+        $x = intval(($width - $textWidth) / 2);
+        $y = intval(($height - $textHeight) / 2) + $size;
+
+        if (!$this->textColor) {
+            $textColor = [$this->rand(0, 150), $this->rand(0, 150), $this->rand(0, 150)];
+        } else {
+            $textColor = $this->textColor;
+        }
+        $col = \imagecolorallocate($image, $textColor[0], $textColor[1], $textColor[2]);
+
+        // 用随机角度逐个书写字母
+        for ($i = 0; $i < $length; $i++) {
+            $symbol = mb_substr($phrase, $i, 1);
+            $box = \imagettfbbox($size, 0, $font, $symbol);
+            $w = $box[2] - $box[0];
+            $angle = $this->rand(-$this->maxAngle, $this->maxAngle);
+            $offset = $this->rand(-$this->maxOffset, $this->maxOffset);
+            \imagettftext($image, $size, $angle, $x, $y + $offset, $col, $font, $symbol);
+            $x += $w;
+        }
+
+        return $col;
+    }
+
+    /**
+     * 绘干扰线
+     */
+    protected function distort($image, $width, $height, $bg)
+    {
+        $contents = imagecreatetruecolor($width, $height);
+        $X = $this->rand(0, $width);
+        $Y = $this->rand(0, $height);
+        $phase = $this->rand(0, 10);
+        $scale = 1.1 + $this->rand(0, 10000) / 30000;
+        for ($x = 0; $x < $width; $x++) {
+            for ($y = 0; $y < $height; $y++) {
+                $Vx = $x - $X;
+                $Vy = $y - $Y;
+                $Vn = sqrt($Vx * $Vx + $Vy * $Vy);
+
+                if ($Vn != 0) {
+                    $Vn2 = $Vn + 4 * sin($Vn / 30);
+                    $nX = $X + ($Vx * $Vn2 / $Vn);
+                    $nY = $Y + ($Vy * $Vn2 / $Vn);
+                } else {
+                    $nX = $X;
+                    $nY = $Y;
+                }
+                $nY = $nY + $scale * sin($phase + $nX * 0.2);
+
+                if ($this->interpolation) {
+                    $p = $this->interpolate(
+                        $nX - floor($nX),
+                        $nY - floor($nY),
+                        $this->getCol($image, floor($nX), floor($nY), $bg),
+                        $this->getCol($image, ceil($nX), floor($nY), $bg),
+                        $this->getCol($image, floor($nX), ceil($nY), $bg),
+                        $this->getCol($image, ceil($nX), ceil($nY), $bg)
+                    );
+                } else {
+                    $p = $this->getCol($image, round($nX), round($nY), $bg);
+                }
+
+                if ($p == 0) {
+                    $p = $bg;
+                }
+
+                imagesetpixel($contents, $x, $y, $p);
+            }
+        }
+
+        return $contents;
+    }
+
+    /**
+     * 获取字体路径
+     * @param $font
+     * @return string
+     */
+    protected function getFontPath($font)
+    {
+        static $fontPathMap = [];
+        if (!\class_exists(\Phar::class, false) || !\Phar::running()) {
+            return $font;
+        }
+
+        $tmpPath = sys_get_temp_dir() ?: '/tmp';
+        $filePath = "$tmpPath/" . basename($font);
+        clearstatcache();
+        if (!isset($fontPathMap[$font]) || !is_file($filePath)) {
+            file_put_contents($filePath, file_get_contents($font));
+            $fontPathMap[$font] = $filePath;
+        }
+        return $fontPathMap[$font];
     }
 
     /**

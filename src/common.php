@@ -13,13 +13,11 @@ if (!function_exists('random_code')) {
 if (!function_exists('order_no')) {
     /**
      * 生成一个订单号
-     * @param int $machineId 集群机器号
      * @return string
      */
-    function order_no(int $machineId = 0): string
+    function order_no(): string
     {
-        \xy_jx\Utils\Generate::machineId($machineId);
-        return \xy_jx\Utils\Generate::getCode();
+        return date('YmdHis') . mt_rand(10, 99) . mt_rand(1000, 9999);
     }
 }
 if (!function_exists('rand_string')) {

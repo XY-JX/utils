@@ -205,7 +205,7 @@ class Sundry
     public static function restrict(array $options, string $key, int $limit = 3, string $time = 's'): bool
     {
         $redis = new Redis\RedisRestrict($options);
-        return $redis->restrict($key, $limit = 3, $time);
+        return $redis->restrict($key, $limit, $time);
     }
 
     /**

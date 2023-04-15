@@ -9,6 +9,8 @@
 
 namespace xy_jx\Utils;
 
+use xy_jx\Redis;
+
 class Sundry
 {
     /**
@@ -185,14 +187,11 @@ class Sundry
     /**
      * 使用Redis
      * @param array $options redis配置
-     * @return \Redis
-     * @throws \Exception
      */
-    public static function redis(array $options = []): \Redis
+    public static function redis(array $options = [])
     {
-
-        $Redis = new Redis($options);
-        return $Redis::handler();
+        $redis = new Redis\Redis();
+        return $redis->connection($options);
     }
 
     /**
@@ -202,12 +201,11 @@ class Sundry
      * @param int $limit 限制次数
      * @param string $time 时间范围 s m h d
      * @return bool
-     * @throws \Exception
      */
     public static function restrict(array $options, string $key, int $limit = 3, string $time = 's'): bool
     {
-        $Redis = new Redis($options);
-        return $Redis::restrict($key, $limit, $time);
+        $redis = new Redis\RedisRestrict($options);
+        return $redis->restrict($key, $limit = 3, $time);
     }
 
     /**

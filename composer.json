@@ -1,25 +1,25 @@
 {
-    "name": "xy_jx/utils",
-    "description": "utils",
-    "require": {
-        "php": ">=7.3.0",
-        "ext-openssl": "*"
+  "name": "xy_jx/utils",
+  "description": "utils",
+  "require": {
+    "php": ">=7.3.0",
+    "xy_jx/redis": ">=0.0.2",
+    "ext-openssl": "*"
+  },
+  "license": "MIT",
+  "autoload": {
+    "psr-4": {
+      "xy_jx\\Utils\\": "src"
     },
-    "license": "MIT",
-    "autoload": {
-        "psr-4": {
-            "xy_jx\\Utils\\": "src"
-        },
-        "files": [
-            "src/common.php"
-        ]
-    },
-    "authors": [
-        {
-            "name": "xy_jx",
-            "email": "zhangschooi@qq.com"
-        }
-    ],
-    "minimum-stability": "dev"
-
+    "files": [
+      "src/common.php"
+    ]
+  },
+  "authors": [
+    {
+      "name": "xy_jx",
+      "email": "zhangschooi@qq.com"
+    }
+  ],
+  "minimum-stability": "dev"
 }

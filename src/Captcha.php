@@ -29,7 +29,7 @@ class Captcha
     // 验证码字体，不设置随机获取
     protected $fontttf = '';
     // 背景颜色
-    protected $bg = [243, 251, 254];
+    protected $bg = [180, 255];
     //算术验证码
     protected $math = false;
     //加密等级
@@ -89,8 +89,8 @@ class Captcha
             $code = mb_strtolower($value, 'UTF-8');
         } else if ($this->math) {
             $this->length = 5;
-            $x = random_int(10, 30);
-            $y = random_int(1, 9);
+            $x = mt_rand(10, 90);
+            $y = mt_rand(0, 9);
             $value = "{$x} + {$y} = ";
             $code = $x + $y;
             $code .= '';
@@ -139,7 +139,7 @@ class Captcha
         if ($this->backgroundImages) {
             $this->background();
         } else {
-            imagecolorallocate($this->im, $this->bg[0], $this->bg[1], $this->bg[2]);
+            imagecolorallocate($this->im, mt_rand($this->bg[0], $this->bg[1]), mt_rand($this->bg[0], $this->bg[1]), mt_rand($this->bg[0], $this->bg[1]));
         }
 
         // 验证码字体随机颜色

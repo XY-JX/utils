@@ -13,40 +13,33 @@ use Exception;
 
 class Openssl
 {
-    protected static $public_key;
-    protected static $private_key;
-    protected static $level;
+    protected static $publicKey;
+    protected static $privateKey;
+    protected static $splitLength = 117;
+
 
     /**
      * Openssl constructor.
      * @param string $publicKeyFile 证书地址
      * @param string $privateKeyFile 证书地址
-     * @param int $level 钥位数 1024 2048 4096
      * @throws Exception
      */
-    public function __construct(string $publicKeyFile = __DIR__ . '/../cert/pub.key', string $privateKeyFile = __DIR__ . '/../cert/pri.key', int $level = 4096)
+    public function __construct(string $publicKeyFile = __DIR__ . '/../cert/pub.key', string $privateKeyFile = __DIR__ . '/../cert/pri.key', $byte = 4096)
     {
         try {
-            self::$public_key = file_get_contents($publicKeyFile);
-            self::$private_key = file_get_contents($privateKeyFile);
-            self::$level = $level;
+            self::$publicKey = file_get_contents($publicKeyFile);
+            self::$privateKey = file_get_contents($privateKeyFile);
+            $array = [
+                1024 => 117,//1024字节证书密钥  1024/8-11  1024/8
+                2048 => 245,//2048字节证书密钥  2048/8-11  2048/8
+                4096 => 501,//4096字节证书密钥  4096/8-11  4096/8
+            ];
+            self::$splitLength = $array[$byte] ?? self::$splitLength;
         } catch (Exception $exception) {
             throw new \Exception($exception->getMessage());
         }
     }
-//    1024   117   128
-//    2048   245   256
-//    4096   501   512
 
-    protected static function level()
-    {
-        $array = [
-            1024 => [117, 128],//1024字节证书密钥  1024/8-11  1024/8
-            2048 => [245, 256],//2048字节证书密钥  2048/8-11  2048/8
-            4096 => [501, 512],//4096字节证书密钥  4096/8-11  4096/8
-        ];
-        return $array[self::$level];
-    }
 
     /**
      * 私钥加密
@@ -55,26 +48,26 @@ class Openssl
      */
     public static function encrypt(array $data): string
     {
-        $crypto = '';
-        foreach (str_split(json_encode($data), self::level()[0]) as $chunk) {
-            openssl_private_encrypt($chunk, $encrypted, self::$private_key);//私钥加密
-            $crypto .= $encrypted;
+        $crypto = [];
+        foreach (str_split(json_encode($data), self::$splitLength) as $chunk) {
+            openssl_private_encrypt($chunk, $encrypted, self::$privateKey);//私钥加密
+            $crypto[] = base64_encode($encrypted);
         }
-        return base64_encode($crypto);//加密后的内容通常含有特殊字符，需要编码转换下，在网络间通过url传输时要注意base64编码是否是url安全的
+        return url_safe_encode(implode('.', $crypto));
     }
 
     /**
      * 公钥解密
      * @param string $encrypted
-     * @return mixed
+     * @return array
      */
-    public static function decrypt(string $encrypted)
+    public static function decrypt(string $encrypted): array
     {
         $crypto = '';
-        foreach (str_split(base64_decode($encrypted), self::level()[1]) as $chunk) {
-            openssl_public_decrypt($chunk, $decrypted, self::$public_key);//私钥加密的内容通过公钥可用解密出来
+        foreach (explode('.', url_safe_decode($encrypted)) as $chunk) {
+            openssl_public_decrypt(base64_decode($chunk), $decrypted, self::$publicKey);//私钥加密的内容通过公钥可用解密出来
             $crypto .= $decrypted;
         }
-        return json_decode($crypto, true);
+        return json_decode($crypto, true) ?? [];
     }
 }

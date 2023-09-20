@@ -32,18 +32,18 @@ class Encryption
      */
     public static function decrypt(string $data, string $iv = ''): array
     {
-        return json_decode(openssl_decrypt($data, self::$config['method'], self::$config['key'], self::$config['options'], $iv ?: self::$config['iv']), true) ?? [];
+        return json_decode(openssl_decrypt(url_safe_decode($data), self::$config['method'], self::$config['key'], self::$config['options'], $iv ?: self::$config['iv']), true) ?? [];
     }
 
     /***
      * 加密
      * @param array $data
      * @param string $iv
-     * @return false|string
+     * @return string
      */
-    public static function encrypt(array $data, string $iv = '')
+    public static function encrypt(array $data, string $iv = ''): string
     {
-        return openssl_encrypt(json_encode($data), self::$config['method'], self::$config['key'], self::$config['options'], $iv ?: self::$config['iv']);
+        return url_safe_encode(openssl_encrypt(json_encode($data), self::$config['method'], self::$config['key'], self::$config['options'], $iv ?: self::$config['iv']));
     }
 
     /**
@@ -55,7 +55,7 @@ class Encryption
     public static function longDecrypt(string $encryptedData, string $iv = ''): array
     {
         $result = '';
-        foreach (str_split($encryptedData, 880) as $chunk) {
+        foreach (explode('.', url_safe_decode($encryptedData)) as $chunk) {
             $result .= openssl_decrypt($chunk, self::$config['method'], self::$config['key'], self::$config['options'], $iv ?: self::$config['iv']);
         }
         return json_decode($result, true) ?? [];
@@ -69,11 +69,11 @@ class Encryption
      */
     public static function longEncrypt(array $encryptedData, string $iv = ''): string
     {
-        $result = '';
+        $result = [];
         foreach (str_split(json_encode($encryptedData), 660) as $chunk) {
-            $result .= openssl_encrypt($chunk, self::$config['method'], self::$config['key'], self::$config['options'], $iv ?: self::$config['iv']); //第四参数OPENSSL_RAW_DATA输出原始数据
+            $result[] = openssl_encrypt($chunk, self::$config['method'], self::$config['key'], self::$config['options'], $iv ?: self::$config['iv']); //第四参数OPENSSL_RAW_DATA输出原始数据
         }
-        return $result;
+        return url_safe_encode(implode('.', $result));
     }
 
     /**

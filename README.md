@@ -81,7 +81,7 @@ class xy
 ```
 #### 谷歌验证码GoogleAuthenticator
 ```
-use xy_jx\Utils\Encryption;
+use xy_jx\Utils\GoogleAuthenticator;
 class xy
 {      
         //创建一个密钥

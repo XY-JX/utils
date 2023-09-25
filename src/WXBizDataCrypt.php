@@ -8,6 +8,7 @@
 // +----------------------------------------------------------------------
 
 namespace xy_jx\Utils;
+
 class WXBizDataCrypt
 {
     private static $appid;
@@ -16,26 +17,31 @@ class WXBizDataCrypt
     /**
      * 构造函数
      * WXBizDataCrypt constructor.
+     *
      * @param $appid string 小程序的appid
      * @param $sessionKey string 用户在小程序登录后获取的会话密钥
      */
     public function __construct(string $appid, string $sessionKey)
     {
         self::$sessionKey = $sessionKey;
-        self::$appid = $appid;
+        self::$appid      = $appid;
     }
 
 
     /**
      * 检验数据的真实性，并且获取解密后的明文.
+     *
      * @param $encryptedData string 加密的用户数据
      * @param $iv string 与用户数据一同返回的初始向量
      * @param $data  解密后的原文
      *
      * @return int 成功0，失败返回对应的错误码
      */
-    public static function decryptData(string $encryptedData, string $iv, &$data): int
-    {
+    public static function decryptData(
+        string $encryptedData,
+        string $iv,
+        &$data
+    ): int {
         if (strlen(self::$sessionKey) != 24) {
             return -41001;
         }
@@ -49,7 +55,13 @@ class WXBizDataCrypt
 
         $aesCipher = base64_decode($encryptedData);
 
-        $result = openssl_decrypt($aesCipher, "AES-128-CBC", $aesKey, 1, $aesIV);
+        $result = openssl_decrypt(
+            $aesCipher,
+            "AES-128-CBC",
+            $aesKey,
+            1,
+            $aesIV
+        );
 
         $dataObj = json_decode($result, true);
         if ($dataObj == null) {
@@ -59,6 +71,7 @@ class WXBizDataCrypt
             return -41003;
         }
         $data = $dataObj;
+
         return 0;
     }
 

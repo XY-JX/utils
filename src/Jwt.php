@@ -45,7 +45,7 @@ class Jwt
     {
         foreach ($config as $key => $val) {
             if (property_exists($this, $key)) {
-                $this->{$key} = $val;
+                self::${$key} = $val;
             }
         }
     }

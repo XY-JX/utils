@@ -15,8 +15,8 @@ class MurmurHash
 {
     /**
      * @param  string $key   要散列的文本。
-     * @param  integer $seed  仅限正整数
-     * @return integer 32位正整数散列
+     * @param  int  $seed  仅限正整数
+     * @return int 32位正整数散列
      */
     public static function hash3Int(string $key, int $seed=0) : int {
         $key  = array_values(unpack('C*', $key));
@@ -58,7 +58,7 @@ class MurmurHash
 
     /**
      * @param  string $key   要散列的文本。
-     * @param  integer $seed  仅限正整数
+     * @param  int  $seed  仅限正整数
      * @return string
      */
     public static function hash3(string $key, int $seed=0) : string {

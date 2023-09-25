@@ -40,96 +40,115 @@ class Captcha
     /**
      * 架构方法 设置参数
      * 可修改 protected 参数
-     * @param array $config ['length'=>5]
+     *
+     * @param  array  $config  ['length'=>5]
      */
     public function __construct(array $config = [])
     {
         foreach ($config as $key => $val) {
-            if (property_exists($this, $key))
+            if (property_exists($this, $key)) {
                 $this->{$key} = $val;
-
+            }
         }
     }
 
     /**
      * 设置参数
+     *
      * @param $name
      * @param $val
+     *
      * @return Captcha
      */
     public function set($name, $val): Captcha
     {
-        if (property_exists($this, $name))
+        if (property_exists($this, $name)) {
             $this->{$name} = $val;
+        }
 
         return $this;
     }
 
     /**
      * 获取配置参数
+     *
      * @param $name
+     *
      * @return string
      */
     public function get($name)
     {
-        if (property_exists($this, $name))
+        if (property_exists($this, $name)) {
             return $this->{$name};
+        }
 
         return '';
     }
 
     /**
      * 创建验证码
-     * @param string $value
+     *
+     * @param  string  $value
+     *
      * @return array
      */
     protected function generate(string $value = ''): array
     {
         if ($value) {
             $code = mb_strtolower($value, 'UTF-8');
-        } else if ($this->math) {
+        } elseif ($this->math) {
             $this->length = 5;
-            $x = mt_rand(10, 90);
-            $y = mt_rand(0, 9);
-            $value = "{$x} + {$y} = ";
-            $code = $x + $y;
-            $code .= '';
+            $x            = mt_rand(10, 90);
+            $y            = mt_rand(0, 9);
+            $value        = "{$x} + {$y} = ";
+            $code         = $x + $y;
+            $code         .= '';
         } else {
             $value = rand_string($this->length, $this->codeSet);
-            $code = mb_strtolower($value, 'UTF-8');
+            $code  = mb_strtolower($value, 'UTF-8');
         }
 
         return [
             'value' => $value,
-            'key' => password_hash($code, PASSWORD_BCRYPT, ['cost' => $this->encryptionLevel]),
-            'code' => $code
+            'key'   => password_hash(
+                $code,
+                PASSWORD_BCRYPT,
+                ['cost' => $this->encryptionLevel]
+            ),
+            'code'  => $code,
         ];
     }
 
     /**
      * 验证验证码是否正确
-     * @param string $code 户验证码
-     * @param string $key 密钥
+     *
+     * @param  string  $code  户验证码
+     * @param  string  $key  密钥
+     *
      * @return bool 用户验证码是否正确
      */
     public function check(string $code, string $key): bool
     {
         $code = mb_strtolower($code, 'UTF-8');
+
         return password_verify($code, $key);
     }
 
     /**
      * 生成验证码
+     *
      * @param $code 默认值
+     *
      * @return array
      */
     public function create($code = ''): array
     {
-
         $generator = $this->generate($code);
 
         // 图片宽(px)
-        $this->imageW || $this->imageW = $this->length * $this->fontSize * 1.5 + $this->length * $this->fontSize / 2;
+        $this->imageW
+        || $this->imageW = $this->length * $this->fontSize * 1.5 + $this->length
+            * $this->fontSize / 2;
         // 图片高(px)
         $this->imageH || $this->imageH = $this->fontSize * 2.5;
         // 建立一幅 $this->imageW x $this->imageH 的图像
@@ -139,14 +158,24 @@ class Captcha
         if ($this->backgroundImages) {
             $this->background();
         } else {
-            imagecolorallocate($this->im, mt_rand($this->bg[0], $this->bg[1]), mt_rand($this->bg[0], $this->bg[1]), mt_rand($this->bg[0], $this->bg[1]));
+            imagecolorallocate(
+                $this->im,
+                mt_rand($this->bg[0], $this->bg[1]),
+                mt_rand($this->bg[0], $this->bg[1]),
+                mt_rand($this->bg[0], $this->bg[1])
+            );
         }
 
         // 验证码字体随机颜色
-        $this->color = imagecolorallocate($this->im, mt_rand(1, 150), mt_rand(1, 150), mt_rand(1, 150));
+        $this->color = imagecolorallocate(
+            $this->im,
+            mt_rand(1, 150),
+            mt_rand(1, 150),
+            mt_rand(1, 150)
+        );
 
         // 验证码使用随机字体
-        $fontttf = $this->fontttf ?: __DIR__ . '/../Font/' . mt_rand(1, 6) . '.ttf';
+        $fontttf = $this->fontttf ?: __DIR__.'/../Font/'.mt_rand(1, 6).'.ttf';
 
 
         if ($this->useNoise) {
@@ -162,12 +191,20 @@ class Captcha
         $text = str_split($generator['value']); // 验证码
 
         foreach ($text as $index => $char) {
-
-            $x = $this->fontSize * ($index + 1) * ($this->math ? 1 : 1.5);
-            $y = $this->fontSize + mt_rand(10, 20);
+            $x     = $this->fontSize * ($index + 1) * ($this->math ? 1 : 1.5);
+            $y     = $this->fontSize + mt_rand(10, 20);
             $angle = $this->math ? 0 : mt_rand(-40, 40);
 
-            imagettftext($this->im, $this->fontSize, $angle, (int)$x, (int)$y, $this->color, $fontttf, $char);
+            imagettftext(
+                $this->im,
+                $this->fontSize,
+                $angle,
+                (int)$x,
+                (int)$y,
+                $this->color,
+                $fontttf,
+                $char
+            );
         }
 
         ob_start();
@@ -176,8 +213,11 @@ class Captcha
         $content = ob_get_clean();
         imagedestroy($this->im);
 
-        return ['key' => $generator['key'], 'code' => $generator['code'], 'img' => 'data:image/png;base64,' . base64_encode($content)];
-
+        return [
+            'key'  => $generator['key'],
+            'code' => $generator['code'],
+            'img'  => 'data:image/png;base64,'.base64_encode($content),
+        ];
     }
 
     /**
@@ -208,28 +248,35 @@ class Captcha
 
         for ($px = $px1; $px <= $px2; $px = $px + 1) {
             if (0 != $w) {
-                $py = $A * sin($w * $px + $f) + $b + $this->imageH / 2; // y = Asin(ωx+φ) + b
-                $i = (int)($this->fontSize / 5);
+                $py = $A * sin($w * $px + $f) + $b + $this->imageH
+                    / 2; // y = Asin(ωx+φ) + b
+                $i  = (int)($this->fontSize / 5);
                 while ($i > 0) {
-                    imagesetpixel($this->im, $px + $i, $py + $i, $this->color); // 这里(while)循环画像素点比imagettftext和imagestring用字体大小一次画出（不用这while循环）性能要好很多
+                    imagesetpixel(
+                        $this->im,
+                        $px + $i,
+                        $py + $i,
+                        $this->color
+                    ); // 这里(while)循环画像素点比imagettftext和imagestring用字体大小一次画出（不用这while循环）性能要好很多
                     $i--;
                 }
             }
         }
 
         // 曲线后部分
-        $A = mt_rand(1, $this->imageH / 2); // 振幅
-        $f = mt_rand(-$this->imageH / 4, $this->imageH / 4); // X轴方向偏移量
-        $T = mt_rand($this->imageH, $this->imageW * 2); // 周期
-        $w = (2 * M_PI) / $T;
-        $b = $py - $A * sin($w * $px + $f) - $this->imageH / 2;
+        $A   = mt_rand(1, $this->imageH / 2); // 振幅
+        $f   = mt_rand(-$this->imageH / 4, $this->imageH / 4); // X轴方向偏移量
+        $T   = mt_rand($this->imageH, $this->imageW * 2); // 周期
+        $w   = (2 * M_PI) / $T;
+        $b   = $py - $A * sin($w * $px + $f) - $this->imageH / 2;
         $px1 = $px2;
         $px2 = $this->imageW;
 
         for ($px = $px1; $px <= $px2; $px = $px + 1) {
             if (0 != $w) {
-                $py = $A * sin($w * $px + $f) + $b + $this->imageH / 2; // y = Asin(ωx+φ) + b
-                $i = (int)($this->fontSize / 5);
+                $py = $A * sin($w * $px + $f) + $b + $this->imageH
+                    / 2; // y = Asin(ωx+φ) + b
+                $i  = (int)($this->fontSize / 5);
                 while ($i > 0) {
                     imagesetpixel($this->im, $px + $i, $py + $i, $this->color);
                     $i--;
@@ -246,10 +293,22 @@ class Captcha
     {
         for ($i = 0; $i < 10; $i++) {
             //杂点颜色
-            $noiseColor = imagecolorallocate($this->im, mt_rand(150, 225), mt_rand(150, 225), mt_rand(150, 225));
+            $noiseColor = imagecolorallocate(
+                $this->im,
+                mt_rand(150, 225),
+                mt_rand(150, 225),
+                mt_rand(150, 225)
+            );
             for ($j = 0; $j < 5; $j++) {
                 // 绘杂点
-                imagestring($this->im, 10, mt_rand(-5, $this->imageW), mt_rand(-5, $this->imageH), rand_string(1), $noiseColor);
+                imagestring(
+                    $this->im,
+                    10,
+                    mt_rand(-5, $this->imageW),
+                    mt_rand(-5, $this->imageH),
+                    rand_string(1),
+                    $noiseColor
+                );
             }
         }
     }
@@ -260,13 +319,23 @@ class Captcha
      */
     protected function background(): void
     {
-
         $gb = $this->backgroundImages[array_rand($this->backgroundImages)];
 
         list($width, $height) = @getimagesize($gb);
         // Resample
         $bgImage = @imagecreatefromjpeg($gb);
-        @imagecopyresampled($this->im, $bgImage, 0, 0, 0, 0, $this->imageW, $this->imageH, $width, $height);
+        @imagecopyresampled(
+            $this->im,
+            $bgImage,
+            0,
+            0,
+            0,
+            0,
+            $this->imageW,
+            $this->imageH,
+            $width,
+            $height
+        );
         @imagedestroy($bgImage);
     }
 

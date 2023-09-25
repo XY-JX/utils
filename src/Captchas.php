@@ -81,28 +81,38 @@ class Captchas
 
     /**
      * 是否启用插值？
+     *
      * @var bool
      */
     protected $interpolation = true;
 
     /**
      * 忽略所有效果
+     *
      * @var bool
      */
     protected $ignoreAllEffects = false;
 
     /**
      * 允许的背景图像类型
+     *
      * @var array
      */
-    protected $allowedBackgroundImageTypes = ['image/png', 'image/jpeg', 'image/gif'];
+    protected $allowedBackgroundImageTypes
+        = [
+            'image/png',
+            'image/jpeg',
+            'image/gif',
+        ];
     /**
      * 字符集
+     *
      * @var string
      */
     protected $charset = 'abcdefghijklmnpqrstuvwxyz123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
     /**
      * 图像内容长度
+     *
      * @var int
      */
     protected $length = 4;
@@ -116,40 +126,47 @@ class Captchas
     /**
      * 架构方法 设置参数
      * 可修改 protected 参数
-     * @param array $config ['length'=>5]
+     *
+     * @param  array  $config  ['length'=>5]
      */
     public function __construct(array $config = [])
     {
         foreach ($config as $key => $val) {
-            if (property_exists($this, $key))
-
+            if (property_exists($this, $key)) {
                 $this->{$key} = $val;
+            }
         }
     }
 
     /**
      * 设置参数
+     *
      * @param $name
      * @param $val
+     *
      * @return Captchas
      */
     public function set($name, $val): Captchas
     {
-        if (property_exists($this, $name))
+        if (property_exists($this, $name)) {
             $this->{$name} = $val;
+        }
 
         return $this;
     }
 
     /**
      * 获取配置参数
+     *
      * @param $name
+     *
      * @return string
      */
     public function get($name)
     {
-        if (property_exists($this, $name))
+        if (property_exists($this, $name)) {
             return $this->{$name};
+        }
 
         return '';
     }
@@ -164,7 +181,9 @@ class Captchas
      */
     public function testPhrase($phrase)
     {
-        return $this->toPhrase($phrase) == $this->toPhrase($this->get('phrase'));
+        return $this->toPhrase($phrase) == $this->toPhrase(
+                $this->get('phrase')
+            );
     }
 
     /**
@@ -180,12 +199,12 @@ class Captchas
      */
     public function isOCRReadable()
     {
-        if (!is_dir($this->tempDir)) {
+        if ( ! is_dir($this->tempDir)) {
             @mkdir($this->tempDir, 0755, true);
         }
 
-        $tempj = $this->tempDir . uniqid('captcha', true) . '.jpg';
-        $tempp = $this->tempDir . uniqid('captcha', true) . '.pgm';
+        $tempj = $this->tempDir.uniqid('captcha', true).'.jpg';
+        $tempp = $this->tempDir.uniqid('captcha', true).'.pgm';
 
         $this->save($tempj);
         shell_exec("convert $tempj $tempp");
@@ -200,8 +219,12 @@ class Captchas
     /**
      * 根据OCR读取代码时生成
      */
-    public function buildAgainstOCR($width = 150, $height = 40, $font = null, $fingerprint = null)
-    {
+    public function buildAgainstOCR(
+        $width = 150,
+        $height = 40,
+        $font = null,
+        $fingerprint = null
+    ) {
         do {
             $this->build(null, $width, $height, $font, $fingerprint);
         } while ($this->isOCRReadable());
@@ -210,45 +233,68 @@ class Captchas
     /**
      * 生成图像
      */
-    public function build($phrase = null, $width = 150, $height = 40, $font = null, $fingerprint = null)
-    {
+    public function build(
+        $phrase = null,
+        $width = 150,
+        $height = 40,
+        $font = null,
+        $fingerprint = null
+    ) {
         $this->phrase = is_string($phrase) ? $phrase : $this->generate();
 
         if (null !== $fingerprint) {
-            $this->fingerprint = $fingerprint;
+            $this->fingerprint    = $fingerprint;
             $this->useFingerprint = true;
         } else {
-            $this->fingerprint = [];
+            $this->fingerprint    = [];
             $this->useFingerprint = false;
         }
 
         if ($font === null) {
-            $font = $this->getFontPath(__DIR__ . '/../Font/' . $this->rand(1, 6) . '.ttf');
+            $font = $this->getFontPath(
+                __DIR__.'/../Font/'.$this->rand(1, 6).'.ttf'
+            );
         }
 
         if (empty($this->backgroundImages)) {
             // 如果未设置背景图像列表，请使用颜色填充作为背景
             $image = imagecreatetruecolor($width, $height);
             if ($this->backgroundColor == null) {
-                $bg = imagecolorallocate($image, $this->rand(180, 255), $this->rand(180, 255), $this->rand(180, 255));
+                $bg = imagecolorallocate(
+                    $image,
+                    $this->rand(180, 255),
+                    $this->rand(180, 255),
+                    $this->rand(180, 255)
+                );
             } else {
                 $color = $this->backgroundColor;
-                $bg = imagecolorallocate($image, $color[0], $color[1], $color[2]);
+                $bg    = imagecolorallocate(
+                    $image,
+                    $color[0],
+                    $color[1],
+                    $color[2]
+                );
             }
             $this->background = $bg;
             imagefill($image, 0, 0, $bg);
         } else {
             // 使用随机背景图像
-            $randomBackgroundImage = $this->backgroundImages[rand(0, count($this->backgroundImages) - 1)];
+            $randomBackgroundImage = $this->backgroundImages[rand(
+                0,
+                count($this->backgroundImages) - 1
+            )];
 
             $imageType = $this->validateBackgroundImage($randomBackgroundImage);
 
-            $image = $this->createBackgroundImageFromType($randomBackgroundImage, $imageType);
+            $image = $this->createBackgroundImageFromType(
+                $randomBackgroundImage,
+                $imageType
+            );
         }
 
         // 应用效果
-        if (!$this->ignoreAllEffects) {
-            $square = $width * $height;
+        if ( ! $this->ignoreAllEffects) {
+            $square  = $width * $height;
             $effects = $this->rand($square / 3000, $square / 2000);
 
             // 设置要在文本前面绘制的最大行数
@@ -264,11 +310,17 @@ class Captchas
         }
 
         // 写入验证码文本
-        $color = $this->writePhrase($image, $this->phrase, $font, $width, $height);
+        $color = $this->writePhrase(
+            $image,
+            $this->phrase,
+            $font,
+            $width,
+            $height
+        );
 
         // 应用效果
-        if (!$this->ignoreAllEffects) {
-            $square = $width * $height;
+        if ( ! $this->ignoreAllEffects) {
+            $square  = $width * $height;
             $effects = $this->rand($square / 3000, $square / 2000);
 
             // 设置要在文本前面绘制的最大行数
@@ -284,12 +336,12 @@ class Captchas
         }
 
         // 绘干扰线
-        if ($this->distortion && !$this->ignoreAllEffects) {
+        if ($this->distortion && ! $this->ignoreAllEffects) {
             $image = $this->distort($image, $width, $height, $bg);
         }
 
         // 后期效果
-        if (!$this->ignoreAllEffects) {
+        if ( ! $this->ignoreAllEffects) {
             $this->postEffect($image);
         }
 
@@ -323,22 +375,31 @@ class Captchas
      */
     public function inline($quality = 90)
     {
-        return 'data:image/jpeg;base64,' . base64_encode($this->getCode($quality));
+        return 'data:image/jpeg;base64,'.base64_encode(
+                $this->getCode($quality)
+            );
     }
 
     /**
      * 获取密钥
+     *
      * @return false|string|null
      */
     public function secretKey($encryptionLevel = 5)
     {
-        return password_hash($this->toPhrase($this->get('phrase')), PASSWORD_BCRYPT, ['cost' => $encryptionLevel]);
+        return password_hash(
+            $this->toPhrase($this->get('phrase')),
+            PASSWORD_BCRYPT,
+            ['cost' => $encryptionLevel]
+        );
     }
 
     /**
      * 验证验证码是否正确
-     * @param string $code 户验证码
-     * @param string $key 密钥
+     *
+     * @param  string  $code  户验证码
+     * @param  string  $key  密钥
+     *
      * @return bool 用户验证码是否正确
      */
     public function check(string $code, string $key): bool
@@ -356,6 +417,7 @@ class Captchas
 
     /**
      * 生成短语
+     *
      * @return string
      */
     protected function generate(): string
@@ -369,13 +431,13 @@ class Captchas
     protected function drawLine($image, $width, $height, $tcol = null)
     {
         if ($this->lineColor === null) {
-            $red = $this->rand(100, 255);
+            $red   = $this->rand(100, 255);
             $green = $this->rand(100, 255);
-            $blue = $this->rand(100, 255);
+            $blue  = $this->rand(100, 255);
         } else {
-            $red = $this->lineColor[0];
+            $red   = $this->lineColor[0];
             $green = $this->lineColor[1];
-            $blue = $this->lineColor[2];
+            $blue  = $this->lineColor[2];
         }
 
         if ($tcol === null) {
@@ -402,7 +464,7 @@ class Captchas
      */
     protected function postEffect($image)
     {
-        if (!function_exists('imagefilter')) {
+        if ( ! function_exists('imagefilter')) {
             return;
         }
 
@@ -425,7 +487,13 @@ class Captchas
 
         // Colorize  着色
         if ($this->rand(0, 5) == 0) {
-            imagefilter($image, IMG_FILTER_COLORIZE, $this->rand(-80, 50), $this->rand(-80, 50), $this->rand(-80, 50));
+            imagefilter(
+                $image,
+                IMG_FILTER_COLORIZE,
+                $this->rand(-80, 50),
+                $this->rand(-80, 50),
+                $this->rand(-80, 50)
+            );
         }
     }
 
@@ -440,28 +508,46 @@ class Captchas
         }
 
         // 获取文本大小和开始位置
-        $size = intval($width / $length) - $this->rand(0, 3) - 1;
-        $box = \imagettfbbox($size, 0, $font, $phrase);
-        $textWidth = $box[2] - $box[0];
+        $size       = intval($width / $length) - $this->rand(0, 3) - 1;
+        $box        = \imagettfbbox($size, 0, $font, $phrase);
+        $textWidth  = $box[2] - $box[0];
         $textHeight = $box[1] - $box[7];
-        $x = intval(($width - $textWidth) / 2);
-        $y = intval(($height - $textHeight) / 2) + $size;
+        $x          = intval(($width - $textWidth) / 2);
+        $y          = intval(($height - $textHeight) / 2) + $size;
 
-        if (!$this->textColor) {
-            $textColor = [$this->rand(0, 150), $this->rand(0, 150), $this->rand(0, 150)];
+        if ( ! $this->textColor) {
+            $textColor = [
+                $this->rand(0, 150),
+                $this->rand(0, 150),
+                $this->rand(0, 150),
+            ];
         } else {
             $textColor = $this->textColor;
         }
-        $col = \imagecolorallocate($image, $textColor[0], $textColor[1], $textColor[2]);
+        $col = \imagecolorallocate(
+            $image,
+            $textColor[0],
+            $textColor[1],
+            $textColor[2]
+        );
 
         // 用随机角度逐个书写字母
         for ($i = 0; $i < $length; $i++) {
             $symbol = mb_substr($phrase, $i, 1);
-            $box = \imagettfbbox($size, 0, $font, $symbol);
-            $w = $box[2] - $box[0];
-            $angle = $this->rand(-$this->maxAngle, $this->maxAngle);
+            $box    = \imagettfbbox($size, 0, $font, $symbol);
+            $w      = $box[2] - $box[0];
+            $angle  = $this->rand(-$this->maxAngle, $this->maxAngle);
             $offset = $this->rand(-$this->maxOffset, $this->maxOffset);
-            \imagettftext($image, $size, $angle, $x, $y + $offset, $col, $font, $symbol);
+            \imagettftext(
+                $image,
+                $size,
+                $angle,
+                $x,
+                $y + $offset,
+                $col,
+                $font,
+                $symbol
+            );
             $x += $w;
         }
 
@@ -474,10 +560,10 @@ class Captchas
     protected function distort($image, $width, $height, $bg)
     {
         $contents = imagecreatetruecolor($width, $height);
-        $X = $this->rand(0, $width);
-        $Y = $this->rand(0, $height);
-        $phase = $this->rand(0, 10);
-        $scale = 1.1 + $this->rand(0, 10000) / 30000;
+        $X        = $this->rand(0, $width);
+        $Y        = $this->rand(0, $height);
+        $phase    = $this->rand(0, 10);
+        $scale    = 1.1 + $this->rand(0, 10000) / 30000;
         for ($x = 0; $x < $width; $x++) {
             for ($y = 0; $y < $height; $y++) {
                 $Vx = $x - $X;
@@ -486,8 +572,8 @@ class Captchas
 
                 if ($Vn != 0) {
                     $Vn2 = $Vn + 4 * sin($Vn / 30);
-                    $nX = $X + ($Vx * $Vn2 / $Vn);
-                    $nY = $Y + ($Vy * $Vn2 / $Vn);
+                    $nX  = $X + ($Vx * $Vn2 / $Vn);
+                    $nY  = $Y + ($Vy * $Vn2 / $Vn);
                 } else {
                     $nX = $X;
                     $nY = $Y;
@@ -520,23 +606,26 @@ class Captchas
 
     /**
      * 获取字体路径
+     *
      * @param $font
+     *
      * @return string
      */
     protected function getFontPath($font)
     {
         static $fontPathMap = [];
-        if (!\class_exists(\Phar::class, false) || !\Phar::running()) {
+        if ( ! \class_exists(\Phar::class, false) || ! \Phar::running()) {
             return $font;
         }
 
-        $tmpPath = sys_get_temp_dir() ?: '/tmp';
-        $filePath = "$tmpPath/" . basename($font);
+        $tmpPath  = sys_get_temp_dir() ?: '/tmp';
+        $filePath = "$tmpPath/".basename($font);
         clearstatcache();
-        if (!isset($fontPathMap[$font]) || !is_file($filePath)) {
+        if ( ! isset($fontPathMap[$font]) || ! is_file($filePath)) {
             file_put_contents($filePath, file_get_contents($font));
             $fontPathMap[$font] = $filePath;
         }
+
         return $fontPathMap[$font];
     }
 
@@ -545,7 +634,7 @@ class Captchas
      */
     protected function rand($min, $max)
     {
-        if (!is_array($this->fingerprint)) {
+        if ( ! is_array($this->fingerprint)) {
             $this->fingerprint = [];
         }
 
@@ -553,7 +642,7 @@ class Captchas
             $value = current($this->fingerprint);
             next($this->fingerprint);
         } else {
-            $value = mt_rand(intval($min), intval($max));
+            $value               = mt_rand(intval($min), intval($max));
             $this->fingerprint[] = $value;
         }
 
@@ -567,6 +656,7 @@ class Captchas
      * @param $ne
      * @param $sw
      * @param $se
+     *
      * @return int
      */
     protected function interpolate($x, $y, $nw, $ne, $sw, $se)
@@ -581,15 +671,15 @@ class Captchas
 
         $m0 = $cx * $r0 + $x * $r1;
         $m1 = $cx * $r2 + $x * $r3;
-        $r = (int)($cy * $m0 + $y * $m1);
+        $r  = (int)($cy * $m0 + $y * $m1);
 
         $m0 = $cx * $g0 + $x * $g1;
         $m1 = $cx * $g2 + $x * $g3;
-        $g = (int)($cy * $m0 + $y * $m1);
+        $g  = (int)($cy * $m0 + $y * $m1);
 
         $m0 = $cx * $b0 + $x * $b1;
         $m1 = $cx * $b2 + $x * $b3;
-        $b = (int)($cy * $m0 + $y * $m1);
+        $b  = (int)($cy * $m0 + $y * $m1);
 
         return ($r << 16) | ($g << 8) | $b;
     }
@@ -598,6 +688,7 @@ class Captchas
      * @param $image
      * @param $x
      * @param $y
+     *
      * @return int
      */
     protected function getCol($image, $x, $y, $background)
@@ -613,6 +704,7 @@ class Captchas
 
     /**
      * @param $col
+     *
      * @return array
      */
     protected function getRGB($col)
@@ -626,27 +718,38 @@ class Captchas
 
     /**
      * 验证背景图像路径。如果有效，则返回图像类型
-     * @param string $backgroundImage
+     *
+     * @param  string  $backgroundImage
+     *
      * @return string
      * @throws Exception
      */
     protected function validateBackgroundImage($backgroundImage)
     {
         // check if file exists 检查文件是否存在
-        if (!file_exists($backgroundImage)) {
+        if ( ! file_exists($backgroundImage)) {
             $backgroundImageExploded = explode('/', $backgroundImage);
-            $imageFileName = count($backgroundImageExploded) > 1 ? $backgroundImageExploded[count($backgroundImageExploded) - 1] : $backgroundImage;
+            $imageFileName           = count($backgroundImageExploded) > 1
+                ? $backgroundImageExploded[count($backgroundImageExploded) - 1]
+                : $backgroundImage;
 
-            throw new Exception('Invalid background image: ' . $imageFileName);
+            throw new Exception('Invalid background image: '.$imageFileName);
         }
 
         // check image type 检查图像类型
-        $finfo = finfo_open(FILEINFO_MIME_TYPE); // return mime type ala mimetype extension
+        $finfo     = finfo_open(
+            FILEINFO_MIME_TYPE
+        ); // return mime type ala mimetype extension
         $imageType = finfo_file($finfo, $backgroundImage);
         finfo_close($finfo);
 
-        if (!in_array($imageType, $this->allowedBackgroundImageTypes)) {
-            throw new Exception('Invalid background image type! Allowed types are: ' . join(', ', $this->allowedBackgroundImageTypes));
+        if ( ! in_array($imageType, $this->allowedBackgroundImageTypes)) {
+            throw new Exception(
+                'Invalid background image type! Allowed types are: '.join(
+                    ', ',
+                    $this->allowedBackgroundImageTypes
+                )
+            );
         }
 
         return $imageType;
@@ -654,13 +757,17 @@ class Captchas
 
     /**
      * 根据类型创建背景图像
-     * @param string $backgroundImage
-     * @param string $imageType
+     *
+     * @param  string  $backgroundImage
+     * @param  string  $imageType
+     *
      * @return resource
      * @throws Exception
      */
-    protected function createBackgroundImageFromType($backgroundImage, $imageType)
-    {
+    protected function createBackgroundImageFromType(
+        $backgroundImage,
+        $imageType
+    ) {
         switch ($imageType) {
             case 'image/jpeg':
                 $image = imagecreatefromjpeg($backgroundImage);
@@ -673,7 +780,9 @@ class Captchas
                 break;
 
             default:
-                throw new Exception('Not supported file type for background image!');
+                throw new Exception(
+                    'Not supported file type for background image!'
+                );
                 break;
         }
 

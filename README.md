@@ -28,14 +28,14 @@ class xy
         echo UUID();//0b90f8b2-dca8-4ee8-86a1-f2a990605912
         
         //数字人民币转汉字大写===========================================
-        echo Rmb::rmbCapital(159622);
+        echo Rmb::rmbCapital(159622);//壹拾伍万玖仟陆佰贰拾贰圆
         
         //验证码=======================================================
         // 初始化验证码类
         $Captcha = new Captcha();
         // 生成验证码和key  （密钥没有存储到session或Cookie）可自己存储 防止用户重复使用
         $cap = $Captcha->create();
-        //echo $cap['img'];//image/png;base64
+        //echo $cap['img'];//data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMgAAAA+CAMAAABZTaSoAAAAclBMVEXOvPAKZhygpcukoLrfprXhuaOenLe+n8ianayatMa...
         // 验证是否正确
         var_dump($Captcha->check($cap['code'], $cap['key']));// true
         
@@ -69,9 +69,9 @@ class xy
         
         //谷歌验证码GoogleAuthenticator==================================
         //创建一个密钥
-        $secret = GoogleAuthenticator::createSecret();
+        $secret = GoogleAuthenticator::createSecret();//WQI5IOGD6WSRHDIFNFHYJCHANUJZDMAG
         //通过密钥获取一个验证码
-        $code = GoogleAuthenticator::getCode($secret);
+        $code = GoogleAuthenticator::getCode($secret);//273079
         //通过密钥验证code
         var_dump(GoogleAuthenticator::verifyCode($secret, $code));// true
         //获取第3方绑定二维码（从google图表中获取图像的QR码URL）

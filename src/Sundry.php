@@ -250,39 +250,6 @@ class Sundry
     }
 
     /**
-     * 使用Redis
-     *
-     * @param  array  $options  redis配置
-     */
-    public static function redis(array $options = [])
-    {
-        $redis = new \xy_jx\Redis\Redis();
-
-        return $redis->connection($options);
-    }
-
-    /**
-     * 访问限制
-     *
-     * @param  array  $options  redis配置
-     * @param  string  $key  ip|uid
-     * @param  int  $limit  限制次数
-     * @param  string  $time  时间范围 s m h d
-     *
-     * @return bool
-     */
-    public static function restrict(
-        array $options,
-        string $key,
-        int $limit = 3,
-        string $time = 's'
-    ): bool {
-        $redis = new \xy_jx\Redis\RedisRestrict($options);
-
-        return $redis->restrict($key, $limit, $time);
-    }
-
-    /**
      * 递归无限级分类
      *
      * @param $data

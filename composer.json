@@ -3,7 +3,6 @@
   "description": "utils",
   "require": {
     "php": ">=7.3.0",
-    "xy_jx/redis": ">=0.0.2",
     "ext-openssl": "*"
   },
   "license": "MIT",

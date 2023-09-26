@@ -99,5 +99,32 @@ class xy
  
 }
 ```
+#### Excel导出
+```
+use xy_jx\Utils\Excel;
+class xy
+{      
+        $userAll = [
+            [
+                'id'   => 1,
+                'name' => '张三',
+                'cd'   => date('Y-m-d'),
+            ],
+            [
+                'id'   => 2,
+                'name' => '李四',
+                'cd'   => date('Y-m-d'),
+            ],
+            [
+                'id'   => 3,
+                'name' => '王五',
+                'cd'   => date('Y-m-d'),
+            ],
+        ];
+        
+        Excel::header('用户导出', ['id' => 'ID', 'name' => '名字', 'cd' => '时间'])
+            ->content($userAll)->save('Xlsx', true, '用户.Xlsx');
+}
+```
 ####  其他方法使用也如此（很简单可自行查看代码都有注释）
 ####  有什么建议和意见，可通过issue或邮箱反馈

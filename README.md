@@ -100,6 +100,10 @@ class xy
 }
 ```
 #### Excel导出
+##### 额外安装phpspreadsheet
+```
+composer require phpoffice/phpspreadsheet
+```
 ```
 use xy_jx\Utils\Excel;
 class xy

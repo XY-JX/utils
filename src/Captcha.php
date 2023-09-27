@@ -41,7 +41,7 @@ class Captcha
      * 架构方法 设置参数
      * 可修改 protected 参数
      *
-     * @param  array  $config  ['length'=>5]
+     * @param array $config ['length'=>5]
      */
     public function __construct(array $config = [])
     {
@@ -88,7 +88,7 @@ class Captcha
     /**
      * 创建验证码
      *
-     * @param  string  $value
+     * @param string $value
      *
      * @return array
      */
@@ -97,33 +97,28 @@ class Captcha
         if ($value) {
             $code = mb_strtolower($value, 'UTF-8');
         } elseif ($this->math) {
-            $this->length = 5;
-            $x            = mt_rand(10, 90);
-            $y            = mt_rand(0, 9);
-            $value        = "{$x} + {$y} = ";
-            $code         = $x + $y;
-            $code         .= '';
+            [$value, $code] = $this->mathOperation();
         } else {
             $value = rand_string($this->length, $this->codeSet);
-            $code  = mb_strtolower($value, 'UTF-8');
+            $code = mb_strtolower($value, 'UTF-8');
         }
 
         return [
             'value' => $value,
-            'key'   => password_hash(
+            'key' => password_hash(
                 $code,
                 PASSWORD_BCRYPT,
                 ['cost' => $this->encryptionLevel]
             ),
-            'code'  => $code,
+            'code' => $code,
         ];
     }
 
     /**
      * 验证验证码是否正确
      *
-     * @param  string  $code  户验证码
-     * @param  string  $key  密钥
+     * @param string $code 户验证码
+     * @param string $key 密钥
      *
      * @return bool 用户验证码是否正确
      */
@@ -175,8 +170,11 @@ class Captcha
         );
 
         // 验证码使用随机字体
-        $fontttf = $this->fontttf ?: __DIR__.'/../Font/'.mt_rand(1, 6).'.ttf';
-
+        if ($this->math) {
+            $fontttf = $this->fontttf ?: __DIR__ . '/../Font/' . mt_rand(1, 5) . '.ttf';
+        } else {
+            $fontttf = $this->fontttf ?: __DIR__ . '/../Font/' . mt_rand(1, 6) . '.ttf';
+        }
 
         if ($this->useNoise) {
             // 绘杂点
@@ -191,8 +189,8 @@ class Captcha
         $text = str_split($generator['value']); // 验证码
 
         foreach ($text as $index => $char) {
-            $x     = $this->fontSize * ($index + 1) * ($this->math ? 1 : 1.5);
-            $y     = $this->fontSize + mt_rand(10, 20);
+            $x = $this->fontSize * ($index + 1) * ($this->math ? 1 : 1.5);
+            $y = $this->fontSize + mt_rand(10, 20);
             $angle = $this->math ? 0 : mt_rand(-40, 40);
 
             imagettftext(
@@ -214,9 +212,9 @@ class Captcha
         imagedestroy($this->im);
 
         return [
-            'key'  => $generator['key'],
+            'key' => $generator['key'],
             'code' => $generator['code'],
-            'img'  => 'data:image/png;base64,'.base64_encode($content),
+            'img' => 'data:image/png;base64,' . base64_encode($content),
         ];
     }
 
@@ -250,7 +248,7 @@ class Captcha
             if (0 != $w) {
                 $py = $A * sin($w * $px + $f) + $b + $this->imageH
                     / 2; // y = Asin(ωx+φ) + b
-                $i  = (int)($this->fontSize / 5);
+                $i = (int)($this->fontSize / 5);
                 while ($i > 0) {
                     imagesetpixel(
                         $this->im,
@@ -264,11 +262,11 @@ class Captcha
         }
 
         // 曲线后部分
-        $A   = mt_rand(1, $this->imageH / 2); // 振幅
-        $f   = mt_rand(-$this->imageH / 4, $this->imageH / 4); // X轴方向偏移量
-        $T   = mt_rand($this->imageH, $this->imageW * 2); // 周期
-        $w   = (2 * M_PI) / $T;
-        $b   = $py - $A * sin($w * $px + $f) - $this->imageH / 2;
+        $A = mt_rand(1, $this->imageH / 2); // 振幅
+        $f = mt_rand(-$this->imageH / 4, $this->imageH / 4); // X轴方向偏移量
+        $T = mt_rand($this->imageH, $this->imageW * 2); // 周期
+        $w = (2 * M_PI) / $T;
+        $b = $py - $A * sin($w * $px + $f) - $this->imageH / 2;
         $px1 = $px2;
         $px2 = $this->imageW;
 
@@ -276,13 +274,37 @@ class Captcha
             if (0 != $w) {
                 $py = $A * sin($w * $px + $f) + $b + $this->imageH
                     / 2; // y = Asin(ωx+φ) + b
-                $i  = (int)($this->fontSize / 5);
+                $i = (int)($this->fontSize / 5);
                 while ($i > 0) {
                     imagesetpixel($this->im, $px + $i, $py + $i, $this->color);
                     $i--;
                 }
             }
         }
+    }
+
+    /**
+     * 数学运算
+     * @return string[]
+     */
+    protected function mathOperation()
+    {
+        $this->length = 5;
+        $x = mt_rand(0, 99);
+        $y = mt_rand(0, 99);
+        $value = $code = '';
+        switch (mt_rand(1, 2)) {
+            case 1;
+                $value = "{$x} + {$y} = ";
+                $code = $x + $y;
+                break;
+            case 2;
+                $value = ($x + $y) . " - {$y} = ";
+                $code = $x;
+                break;
+        }
+        $code .= '';
+        return [$value, $code];
     }
 
     /**

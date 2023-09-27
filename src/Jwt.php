@@ -121,13 +121,13 @@ class Jwt
      * 获取用户信息
      *
      * @param $token
-     *
+     * @param null $uuid
      * @return array
      */
-    public static function getUser($token): array
+    public static function getUser($token, &$uuid = null): array
     {
         $tokenData = self::checkToken($token);
-
+        $uuid = $tokenData['uuid'] ?? null;
         return $tokenData['user'] ?? [];
     }
 

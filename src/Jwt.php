@@ -93,7 +93,7 @@ class Jwt
      *
      * @return array
      */
-    public static function getToken(array $user, int $expire = 0): array
+    public static function getToken(array $user, array $auth = [], int $expire = 0): array
     {
         $time    = time();
         $sigData = [
@@ -104,6 +104,7 @@ class Jwt
             'iat'  => $time,//签发时间
             'exp'  => $time + ($expire ?: 86400 * 7),//过期时间
             'user' => $user,//需要存储的用户信息
+            'auth' => $auth,//需要存储的额外信息如授权
             'uuid' => UUID(),
         ];
 
@@ -120,14 +121,18 @@ class Jwt
     /**
      * 获取用户信息
      *
-     * @param $token
-     * @param null $uuid
+     * @param  string  $token
+     * @param  null    $uuid
+     * @param  array   $auth
+     *
      * @return array
      */
-    public static function getUser($token, &$uuid = null): array
+    public static function getUser(string $token, &$uuid = null, array &$auth = []): array
     {
         $tokenData = self::checkToken($token);
         $uuid = $tokenData['uuid'] ?? null;
+        $auth = $tokenData['auth'] ?? [];
+
         return $tokenData['user'] ?? [];
     }
 
@@ -160,18 +165,6 @@ class Jwt
     }
 
     /**
-     * 获取token数据（token可能已过期）
-     *
-     * @param $token
-     *
-     * @return array
-     */
-    public static function getTokenData($token): array
-    {
-        return Encryption::decrypt($token, self::$iv);
-    }
-
-    /**
      * 获取到期时间戳
      *
      * @param $token
@@ -183,6 +176,32 @@ class Jwt
         $tokenData = self::checkToken($token);
 
         return $tokenData['exp'] ?? 0;
+    }
+
+    /**
+     * 获取授权信息
+     *
+     * @param $token
+     *
+     * @return array
+     */
+    public static function getAuth($token): array
+    {
+        $tokenData = self::checkToken($token);
+
+        return $tokenData['auth'] ?? [];
+    }
+
+    /**
+     * 获取token数据（token可能已过期）
+     *
+     * @param $token
+     *
+     * @return array
+     */
+    public static function getTokenData($token): array
+    {
+        return Encryption::decrypt($token, self::$iv);
     }
 
     private static function checkToken($token): array
@@ -203,6 +222,7 @@ class Jwt
 
             return $tokenData;
         } catch (\Exception $e) {
+
             return [];
         }
     }

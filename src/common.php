@@ -84,7 +84,7 @@ if ( ! function_exists('UUID')) {
         try {
             $data = random_bytes(16);
         } catch (Exception $e) {
-            return generate_UUID();
+            $data = openssl_random_pseudo_bytes(16);
         }
         // 设置 UUID 版本号（4 代），并将 UUID 变体设置为 DCE 1.1
         $data[6] = chr(ord($data[6]) & 0x0f | 0x40);
@@ -92,6 +92,29 @@ if ( ! function_exists('UUID')) {
 
         // 格式化 UUID
         return vsprintf('%s%s-%s-%s-%s-%s%s%s', str_split(bin2hex($data), 4));
+    }
+}
+if ( ! function_exists('global_id')) {
+    /**
+     * 生成全局ID
+     * @return string
+     */
+    function global_id(): string
+    {
+        try {
+            $data = random_bytes(12);
+        } catch (Exception $e) {
+            $data = openssl_random_pseudo_bytes(12);
+        }
+        // 设置 UUID 版本号（4 代），并将 UUID 变体设置为 DCE 1.1
+        $data[2] = chr(ord($data[2]) & 0x0f | 0x40);
+        $data[4] = chr(ord($data[4]) & 0x3f | 0x80);
+
+        // 格式化 UUID
+        return vsprintf(
+            '%s%s-%s-%s-%s-%s%s%s',
+            str_split(dechex(time()).bin2hex($data), 4)
+        );
     }
 }
 if ( ! function_exists('day_surplus_time')) {

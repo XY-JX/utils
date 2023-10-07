@@ -105,7 +105,7 @@ class Jwt
             'exp'  => $time + ($expire ?: 86400 * 7),//过期时间
             'user' => $user,//需要存储的用户信息
             'auth' => $auth,//需要存储的额外信息如授权
-            'uuid' => UUID(),
+            'uuid' => global_id(),
         ];
 
         $data          = [

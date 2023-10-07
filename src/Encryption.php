@@ -80,7 +80,7 @@ class Encryption
         return null;
     }
 
-    /***
+    /**
      * 加密
      *
      * @param  array  $data

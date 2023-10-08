@@ -462,3 +462,14 @@ if (!function_exists('generate_key')) {
         return true;
     }
 }
+if (!function_exists('rmb_capital')) {
+    /**
+     * 数字人民币转汉字大写
+     * @param $amount
+     * @return string
+     */
+    function rmb_capital($amount): string
+    {
+        return \xy_jx\Utils\Rmb::rmbCapital($amount);
+    }
+}

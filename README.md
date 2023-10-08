@@ -24,11 +24,7 @@
 ```
 #### 数字人民币转汉字大写
 ```
-use xy_jx\Utils\Rmb;
-class xy
-{      
-      echo  Rmb::rmbCapital(159622);//壹拾伍万玖仟陆佰贰拾贰圆
-}
+      echo  rmb_capital(159622);//壹拾伍万玖仟陆佰贰拾贰圆
 ```
 #### 验证码
 ```

@@ -11,7 +11,7 @@
       "xy_jx\\Utils\\": "src"
     },
     "files": [
-      "src/common.php"
+      "src/helpers.php"
     ]
   },
   "authors": [

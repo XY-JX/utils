@@ -88,29 +88,30 @@ class Jwt
     /**
      * 获取token
      *
-     * @param  array  $user
-     * @param  int  $expire
+     * @param array $user
+     * @param array $auth
+     * @param int $expire
      *
      * @return array
      */
     public static function getToken(array $user, array $auth = [], int $expire = 0): array
     {
-        $time    = time();
+        $time = time();
         $sigData = [
-            'iss'  => self::$iss,//签发者
-            'aud'  => self::$aud,//接收者
-            'sub'  => self::$sub,//面向的用户
+            'iss' => self::$iss,//签发者
+            'aud' => self::$aud,//接收者
+            'sub' => self::$sub,//面向的用户
             'type' => self::$type,//类型
-            'iat'  => $time,//签发时间
-            'exp'  => $time + ($expire ?: 86400 * 7),//过期时间
+            'iat' => $time,//签发时间
+            'exp' => $time + ($expire ?: 86400 * 7),//过期时间
             'user' => $user,//需要存储的用户信息
             'auth' => $auth,//需要存储的额外信息如授权
             'uuid' => global_id(),
         ];
 
-        $data          = [
+        $data = [
             'type' => self::$type,
-            'exp'  => $sigData['exp'],
+            'exp' => $sigData['exp'],
             'uuid' => $sigData['uuid'],
         ];
         $data['token'] = Encryption::encrypt($sigData, self::$iv);
@@ -121,9 +122,9 @@ class Jwt
     /**
      * 获取用户信息
      *
-     * @param  string  $token
-     * @param  null    $uuid
-     * @param  array   $auth
+     * @param string $token
+     * @param null $uuid
+     * @param array $auth
      *
      * @return array
      */
@@ -207,7 +208,7 @@ class Jwt
     private static function checkToken($token): array
     {
         try {
-            if ( ! $tokenData = Encryption::decrypt($token, self::$iv)) {
+            if (!$tokenData = Encryption::decrypt($token, self::$iv)) {
                 throw new \Exception('token错误');
             }
             if ($tokenData['exp'] < time()) {
@@ -222,7 +223,6 @@ class Jwt
 
             return $tokenData;
         } catch (\Exception $e) {
-
             return [];
         }
     }

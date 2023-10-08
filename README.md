@@ -6,6 +6,22 @@
 [![License](http://poser.pugx.org/xy_jx/utils/license)](https://packagist.org/packages/xy_jx/utils)
 [![PHP Version Require](http://poser.pugx.org/xy_jx/utils/require/php)](https://packagist.org/packages/xy_jx/utils)
 
+<p  align="center">
+1.生成二维码
+2.xml与数组转换
+3.生成范围经纬度
+4.经纬度换算距离
+5.人民币转大写
+6.MurmurHash
+7.GoogleAuth
+8.对称加密和证书加密
+9.访问限制
+10.生成证书
+11.验证码
+12.Excel导出
+13.jwt
+</p>
+
 ### 第一步：composer安装
 
 ```

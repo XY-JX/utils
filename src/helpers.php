@@ -345,7 +345,7 @@ if (!function_exists('array_columns')) {
      *
      * @param array $array 需要取出数组列的多维数组
      * @param array $keys 要取出的列名，如不传则返回所有列
-     * @param mixed $default
+     * @param mixed $default 默认值
      * @param null $index_key 作为返回数组的索引的列
      *
      * @return array

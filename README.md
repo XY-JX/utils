@@ -1,4 +1,10 @@
-<h2><p align="center">xy工具插件  (一个简单的示例)</p></h2>
+<h1 align="center">工具插件</h1>
+
+[![Latest Stable Version](http://poser.pugx.org/xy_jx/utils/v)](https://packagist.org/packages/xy_jx/utils)
+[![Total Downloads](http://poser.pugx.org/xy_jx/utils/downloads)](https://packagist.org/packages/xy_jx/utils)
+[![Latest Unstable Version](http://poser.pugx.org/xy_jx/utils/v/unstable)](https://packagist.org/packages/xy_jx/utils)
+[![License](http://poser.pugx.org/xy_jx/utils/license)](https://packagist.org/packages/xy_jx/utils)
+[![PHP Version Require](http://poser.pugx.org/xy_jx/utils/require/php)](https://packagist.org/packages/xy_jx/utils)
 
 ### 第一步：composer安装
 

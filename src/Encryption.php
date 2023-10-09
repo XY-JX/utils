@@ -12,7 +12,7 @@ namespace xy_jx\Utils;
 class Encryption
 {
     /**
-     * 密码学方式。openssl_get_cipher_methods() 可获取有效密码方式列表
+     * 加密算法，使用openssl_get_cipher_methods()函数获取可用的加密算法列表。
      *
      * @var string
      */
@@ -35,6 +35,17 @@ class Encryption
      * @var int
      */
     private static $options = OPENSSL_ZERO_PADDING;
+    /**
+     * 超长加密分割长度
+     * @var int
+     */
+    private static $splitLength = 660;
+    /**
+     * 超长加密分割符号
+     * @var string
+     */
+    private static $splitSymbol = '.';
+
 
     public function __construct(array $config = [])
     {
@@ -83,8 +94,8 @@ class Encryption
     /**
      * 加密
      *
-     * @param  array  $data
-     * @param  string  $iv
+     * @param array $data
+     * @param string $iv
      *
      * @return string
      */
@@ -104,8 +115,8 @@ class Encryption
     /**
      * 解密
      *
-     * @param  string  $data
-     * @param  string  $iv
+     * @param string $data
+     * @param string $iv
      *
      * @return array
      */
@@ -127,17 +138,15 @@ class Encryption
     /**
      * 超长文本加密
      *
-     * @param  array  $encryptedData
-     * @param  string  $iv
+     * @param array $encryptedData
+     * @param string $iv
      *
      * @return string
      */
-    public static function longEncrypt(
-        array $encryptedData,
-        string $iv = ''
-    ): string {
+    public static function longEncrypt(array $encryptedData, string $iv = ''): string
+    {
         $result = [];
-        foreach (str_split(json_encode($encryptedData), 660) as $chunk) {
+        foreach (str_split(json_encode($encryptedData), self::$splitLength) as $chunk) {
             $result[] = openssl_encrypt(
                 $chunk,
                 self::$method,
@@ -147,23 +156,21 @@ class Encryption
             );
         }
 
-        return url_safe_encode(implode('.', $result));
+        return url_safe_encode(implode(self::$splitSymbol, $result));
     }
 
     /**
      * 超长文本解密
      *
-     * @param  string  $encryptedData
-     * @param  string  $iv
+     * @param string $encryptedData
+     * @param string $iv
      *
      * @return array
      */
-    public static function longDecrypt(
-        string $encryptedData,
-        string $iv = ''
-    ): array {
+    public static function longDecrypt(string $encryptedData, string $iv = ''): array
+    {
         $result = '';
-        foreach (explode('.', url_safe_decode($encryptedData)) as $chunk) {
+        foreach (explode(self::$splitSymbol, url_safe_decode($encryptedData)) as $chunk) {
             $result .= openssl_decrypt(
                 $chunk,
                 self::$method,
@@ -184,11 +191,11 @@ class Encryption
      */
     public static function resetKey()
     {
-        $f       = './src/Encryption.php';
-        $s       = uniqid(mt_rand(100, 999));
+        $f = './src/Encryption.php';
+        $s = uniqid(mt_rand(100, 999));
         $fileGet = file_get_contents($f);
-        $file    = str_replace(self::$key, md5($s), $fileGet);
-        $file    = str_replace(self::$iv, $s, $file);
+        $file = str_replace(self::$key, md5($s), $fileGet);
+        $file = str_replace(self::$iv, $s, $file);
 
         return file_put_contents($f, $file);
     }

@@ -29,7 +29,7 @@ class Jwt
      */
     protected static $sub = 'xy-jx';
     /**
-     * 面向的用户
+     * 签发类型
      *
      * @var string
      */

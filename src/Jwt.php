@@ -226,4 +226,19 @@ class Jwt
             return [];
         }
     }
+
+    /**
+     * 重置密钥 不建议使用
+     *
+     * @return false|int
+     */
+    public static function resetKey()
+    {
+        $f = './src/Jwt.php';
+        $s = uniqid(mt_rand(100, 999));
+        $fileGet = file_get_contents($f);
+        $file = str_replace(self::$iv, $s, $fileGet);
+
+        return file_put_contents($f, $file);
+    }
 }

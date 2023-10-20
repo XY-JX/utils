@@ -20,5 +20,10 @@
       "email": "zhangschooi@qq.com"
     }
   ],
-  "minimum-stability": "dev"
+  "minimum-stability": "dev",
+  "scripts": {
+    "post-package-install": [
+      "xy_jx\\Utils\\Install::install"
+    ]
+  }
 }

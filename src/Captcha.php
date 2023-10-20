@@ -141,13 +141,11 @@ class Captcha
         $generator = $this->generate($code);
 
         // 图片宽(px)
-        $this->imageW
-        || $this->imageW = $this->length * $this->fontSize * 1.5 + $this->length
-            * $this->fontSize / 2;
+        $this->imageW || $this->imageW = intval($this->length * $this->fontSize * 1.5 + $this->length * $this->fontSize / 2);
         // 图片高(px)
-        $this->imageH || $this->imageH = $this->fontSize * 2.5;
+        $this->imageH || $this->imageH = intval($this->fontSize * 2.5);
         // 建立一幅 $this->imageW x $this->imageH 的图像
-        $this->im = imagecreate((int)$this->imageW, (int)$this->imageH);
+        $this->im = imagecreate($this->imageW, $this->imageH);
 
         // 设置背景
         if ($this->backgroundImages) {
@@ -189,16 +187,15 @@ class Captcha
         $text = str_split($generator['value']); // 验证码
 
         foreach ($text as $index => $char) {
-            $x = $this->fontSize * ($index + 1) * ($this->math ? 1 : 1.5);
+            $x = intval($this->fontSize * ($index + 1) * ($this->math ? 1 : 1.5));
             $y = $this->fontSize + mt_rand(10, 20);
             $angle = $this->math ? 0 : mt_rand(-40, 40);
-
             imagettftext(
                 $this->im,
                 $this->fontSize,
                 $angle,
-                (int)$x,
-                (int)$y,
+                $x,
+                $y,
                 $this->color,
                 $fontttf,
                 $char
@@ -238,16 +235,15 @@ class Captcha
         $A = mt_rand(1, intval($this->imageH / 2)); // 振幅
         $b = mt_rand(-intval($this->imageH / 4), intval($this->imageH / 4)); // Y轴方向偏移量
         $f = mt_rand(-intval($this->imageH / 4), intval($this->imageH / 4)); // X轴方向偏移量
-        $T = mt_rand((int)$this->imageH, intval($this->imageW * 2)); // 周期
+        $T = mt_rand($this->imageH, $this->imageW * 2); // 周期
         $w = (2 * M_PI) / $T;
 
         $px1 = 0; // 曲线横坐标起始位置
-        $px2 = mt_rand($this->imageW / 2, $this->imageW * 0.8); // 曲线横坐标结束位置
+        $px2 = mt_rand(intval($this->imageW / 2), intval($this->imageW * 0.8)); // 曲线横坐标结束位置
 
         for ($px = $px1; $px <= $px2; $px = $px + 1) {
             if (0 != $w) {
-                $py = $A * sin($w * $px + $f) + $b + $this->imageH
-                    / 2; // y = Asin(ωx+φ) + b
+                $py = intval($A * sin($w * $px + $f) + $b + $this->imageH / 2); // y = Asin(ωx+φ) + b
                 $i = (int)($this->fontSize / 5);
                 while ($i > 0) {
                     imagesetpixel(
@@ -263,8 +259,8 @@ class Captcha
 
         // 曲线后部分
         $A = mt_rand(1, intval($this->imageH / 2)); // 振幅
-        $f = mt_rand(- intval($this->imageH / 4),  intval($this->imageH / 4)); // X轴方向偏移量
-        $T = mt_rand((int)$this->imageH,  intval($this->imageW * 2)); // 周期
+        $f = mt_rand(-intval($this->imageH / 4), intval($this->imageH / 4)); // X轴方向偏移量
+        $T = mt_rand($this->imageH, intval($this->imageW * 2)); // 周期
         $w = (2 * M_PI) / $T;
         $b = $py - $A * sin($w * $px + $f) - $this->imageH / 2;
         $px1 = $px2;
@@ -272,8 +268,7 @@ class Captcha
 
         for ($px = $px1; $px <= $px2; $px = $px + 1) {
             if (0 != $w) {
-                $py = $A * sin($w * $px + $f) + $b + $this->imageH
-                    / 2; // y = Asin(ωx+φ) + b
+                $py = intval($A * sin($w * $px + $f) + $b + $this->imageH / 2); // y = Asin(ωx+φ) + b
                 $i = (int)($this->fontSize / 5);
                 while ($i > 0) {
                     imagesetpixel($this->im, $px + $i, $py + $i, $this->color);
@@ -326,8 +321,8 @@ class Captcha
                 imagestring(
                     $this->im,
                     10,
-                    mt_rand(-5, (int)$this->imageW),
-                    mt_rand(-5, (int)$this->imageH),
+                    mt_rand(-5, $this->imageW),
+                    mt_rand(-5, $this->imageH),
                     rand_string(1),
                     $noiseColor
                 );

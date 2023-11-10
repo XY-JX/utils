@@ -62,7 +62,7 @@ class MurmurHash
      * @return string
      */
     public static function hash3(string $key, int $seed=0) : string {
-        return base_convert(sprintf("%u\n", self::hash3_int($key, $seed)), 10, 32);
+        return base_convert(sprintf("%u\n", self::hash3Int($key, $seed)), 10, 32);
     }
 
 }

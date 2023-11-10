@@ -6,6 +6,17 @@
 // +----------------------------------------------------------------------
 // | Notes:  一些函数方法
 // +----------------------------------------------------------------------
+if (!function_exists('rmb_capital')) {
+    /**
+     * 数字人民币转汉字大写
+     * @param $amount
+     * @return string
+     */
+    function rmb_capital($amount): string
+    {
+        return \xy_jx\Utils\Rmb::rmbCapital($amount);
+    }
+}
 if (!function_exists('order_no')) {
     /**
      * 生成一个订单号
@@ -193,7 +204,7 @@ if (!function_exists('get_location_distance')) {
 }
 if (!function_exists('get_location_distance_format')) {
     /**
-     *  获取位置距离格式
+     * 获取位置距离格式
      *
      * @param $lng1 /经度
      * @param $lat1 /纬度
@@ -339,35 +350,22 @@ if (!function_exists('recursion')) {
         return $arr;
     }
 }
-if (!function_exists('array_columns')) {
+if (!function_exists('format_two_array')) {
     /**
-     * 返回数组中指定多列
-     *
+     * 格式二维数组,类似array_column()可以指定多列
      * @param array $array 需要取出数组列的多维数组
      * @param array $keys 要取出的列名，如不传则返回所有列
+     * @param mixed $index_key 作为返回数组的索引的列
      * @param mixed $default 默认值
-     * @param null $index_key 作为返回数组的索引的列
      *
      * @return array
      */
-    function array_columns(array $array, array $keys = [], $default = '', $index_key = null): array
+    function format_two_array(array $array, array $keys = [], $index_key = null, $default = ''): array
     {
         $result = [];
-        if (!$array) {
-            return $result;
-        }
         foreach ($array as $v) {
-            // 指定返回列
-            $item = [];
-            if ($keys) {
-                foreach ($keys as $key) {
-                    $item[$key] = $v[$key] ?? $default;
-                }
-            } else {
-                $item = $v;
-            }
-            // 指定索引列
-            if ($index_key) {
+            $item = format_array($v, $keys, $default);
+            if ($index_key && array_key_exists($index_key, $v)) {
                 $result[$v[$index_key]] = $item;
             } else {
                 $result[] = $item;
@@ -375,6 +373,25 @@ if (!function_exists('array_columns')) {
         }
 
         return $result;
+    }
+}
+if (!function_exists('format_array')) {
+    /**
+     * 格式一维数组
+     * @param array $array 需要格式的数组
+     * @param array $keys 要取出的列名，如不传则返回所有列
+     * @param string $default 默认值
+     * @return array
+     */
+    function format_array(array $array, array $keys = [], string $default = ''): array
+    {
+        $item = $array;
+        if (empty($keys)) {
+            return $item;
+        }
+        $item = array_intersect_key($array, array_flip($keys));
+        $item += array_fill_keys(array_diff($keys, array_keys($item)), $default);
+        return $item;
     }
 }
 if (!function_exists('many_convert')) {
@@ -462,14 +479,4 @@ if (!function_exists('generate_key')) {
         return true;
     }
 }
-if (!function_exists('rmb_capital')) {
-    /**
-     * 数字人民币转汉字大写
-     * @param $amount
-     * @return string
-     */
-    function rmb_capital($amount): string
-    {
-        return \xy_jx\Utils\Rmb::rmbCapital($amount);
-    }
-}
+

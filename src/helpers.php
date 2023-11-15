@@ -228,22 +228,25 @@ if (!function_exists('array_to_xml')) {
      * array转XML
      *
      * @param array $array
+     * @param string $root
      * @return string
      */
-    function array_to_xml(array $array): string
+    function array_to_xml(array $array, string $root = 'xml'): string
     {
         if (count($array) == 0) {
             return '';
         }
-        $xml = "<xml>";
+        $xml = "<$root>";
         foreach ($array as $key => $val) {
-            if (is_numeric($val)) {
+            if (is_array($val)) {
+                $xml .= array_to_xml($val, $key);
+            } elseif (is_numeric($val)) {
                 $xml .= "<" . $key . ">" . $val . "</" . $key . ">";
             } else {
                 $xml .= "<" . $key . "><![CDATA[" . $val . "]]></" . $key . ">";
             }
         }
-        $xml .= "</xml>";
+        $xml .= "</$root>";
 
         return $xml;
     }

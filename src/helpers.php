@@ -402,17 +402,17 @@ if (!function_exists('many_convert')) {
      * 多进制转换
      *
      * @param mixed $num 需要转换的值
-     * @param int $current 当前进制
+     * @param int $current 当前进制(最小支持2)
      * @param int $result 需要转成的进制（最大支持62）
      *
      * @return bool|int|string
      */
-    function many_convert($num, int $current = 10, int $result = 32)
+    function many_convert($num, int $current = 10, int $result = 36)
     {
         if ($current > 62 || $result > 62) {
             return false;
         }
-        if ($current > 32 || $result > 32) {
+        if ($current > 36 || $result > 36) {
             $dict = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
             if ($current > $result) { // 62进制数转换成十进制数
                 $num = strval($num);

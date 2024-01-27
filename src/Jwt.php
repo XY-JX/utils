@@ -123,11 +123,11 @@ class Jwt
      *
      * @param string $token
      * @param null $uuid
-     * @param array $auth
-     * @param int $iat
+     * @param  $auth
+     * @param  $iat
      * @return array
      */
-    public static function getUser(string $token, &$uuid = null, array &$auth = [], int &$iat = 0): array
+    public static function getUser(string $token, &$uuid = null, &$auth = null, &$iat = null): array
     {
         $tokenData = self::checkToken($token);
         $uuid = $tokenData['uuid'] ?? null;

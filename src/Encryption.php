@@ -101,7 +101,7 @@ class Encryption
      */
     public static function encrypt(array $data, string $iv = ''): string
     {
-        return url_safe_encode(openssl_encrypt(json_encode($data), self::$method, self::$key, self::$options, $iv ?: self::$iv));
+        return url_safe_encode(@openssl_encrypt(json_encode($data), self::$method, self::$key, self::$options, $iv ?: self::$iv));
     }
 
     /**
@@ -114,7 +114,7 @@ class Encryption
      */
     public static function decrypt(string $data, string $iv = ''): array
     {
-        return json_decode(openssl_decrypt(url_safe_decode($data), self::$method, self::$key, self::$options, $iv ?: self::$iv), true) ?? [];
+        return json_decode(@openssl_decrypt(url_safe_decode($data), self::$method, self::$key, self::$options, $iv ?: self::$iv), true) ?? [];
     }
 
 
@@ -130,7 +130,7 @@ class Encryption
     {
         $result = [];
         foreach (str_split(json_encode($encryptedData), self::$splitLength) as $chunk) {
-            $result[] = openssl_encrypt($chunk, self::$method, self::$key, self::$options, $iv ?: self::$iv);
+            $result[] = @openssl_encrypt($chunk, self::$method, self::$key, self::$options, $iv ?: self::$iv);
         }
 
         return url_safe_encode(implode(self::$splitSymbol, $result));
@@ -148,7 +148,7 @@ class Encryption
     {
         $result = '';
         foreach (explode(self::$splitSymbol, url_safe_decode($encryptedData)) as $chunk) {
-            $result .= openssl_decrypt($chunk, self::$method, self::$key, self::$options, $iv ?: self::$iv);
+            $result .= @openssl_decrypt($chunk, self::$method, self::$key, self::$options, $iv ?: self::$iv);
         }
 
         return json_decode($result, true) ?? [];

@@ -127,17 +127,17 @@ class Jwt
      * 获取用户信息
      *
      * @param string $token
-     * @param int $iat
      * @param null $uuid
      * @param array $auth
-     *
+     * @param int $iat
      * @return array
      */
-    public static function getUser(string $token, int $iat = 0, &$uuid = null, array &$auth = []): array
+    public static function getUser(string $token, &$uuid = null, array &$auth = [], int &$iat = 0): array
     {
-        $tokenData = self::checkToken($token, $iat);
+        $tokenData = self::checkToken($token);
         $uuid = $tokenData['uuid'] ?? null;
         $auth = $tokenData['auth'] ?? [];
+        $iat = $tokenData['iat'] ?? 0;
 
         return $tokenData['user'] ?? [];
     }
@@ -146,12 +146,11 @@ class Jwt
      * 获取uuid
      *
      * @param string $token
-     * @param int $iat
      * @return mixed|null
      */
-    public static function getUUID(string $token, int $iat = 0)
+    public static function getUUID(string $token)
     {
-        $tokenData = self::checkToken($token, $iat);
+        $tokenData = self::checkToken($token);
 
         return $tokenData['uuid'] ?? null;
     }
@@ -160,12 +159,11 @@ class Jwt
      * 获取type
      *
      * @param string $token
-     * @param int $iat
      * @return mixed|null
      */
-    public static function getType(string $token, int $iat = 0)
+    public static function getType(string $token)
     {
-        $tokenData = self::checkToken($token, $iat);
+        $tokenData = self::checkToken($token);
 
         return $tokenData['type'] ?? null;
     }
@@ -174,12 +172,11 @@ class Jwt
      * 获取到期时间戳
      *
      * @param string $token
-     * @param int $iat
      * @return int
      */
-    public static function getExp(string $token, int $iat = 0): int
+    public static function getExp(string $token): int
     {
-        $tokenData = self::checkToken($token, $iat);
+        $tokenData = self::checkToken($token);
 
         return $tokenData['exp'] ?? 0;
     }
@@ -188,12 +185,11 @@ class Jwt
      * 获取授权信息
      *
      * @param string $token
-     * @param int $iat
      * @return array
      */
-    public static function getAuth(string $token, int $iat = 0): array
+    public static function getAuth(string $token): array
     {
-        $tokenData = self::checkToken($token, $iat);
+        $tokenData = self::checkToken($token);
 
         return $tokenData['auth'] ?? [];
     }
@@ -211,14 +207,11 @@ class Jwt
         return Encryption::decrypt($token, self::$iv);
     }
 
-    private static function checkToken($token, $iat = 0): array
+    private static function checkToken($token): array
     {
         try {
             if (!$tokenData = self::getTokenData($token)) {
                 throw new \Exception('token错误');
-            }
-            if (!empty($iat) && $tokenData['iat'] < $iat) {
-                throw new \Exception('token已过期');
             }
             if ($tokenData['exp'] < time()) {
                 throw new \Exception('token已过期');

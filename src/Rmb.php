@@ -14,18 +14,7 @@ class Rmb
 {
     public static function rmbCapital($amount): string
     {
-        $capitalNumbers = [
-            '零',
-            '壹',
-            '贰',
-            '叁',
-            '肆',
-            '伍',
-            '陆',
-            '柒',
-            '捌',
-            '玖',
-        ];
+        $capitalNumbers = ['零', '壹', '贰', '叁', '肆', '伍', '陆', '柒', '捌', '玖',];
 
         $integerUnits = ['', '拾', '佰', '仟',];
 
@@ -40,7 +29,7 @@ class Rmb
         $integer = trim($arr[0] ?? '', '-');
         $decimal = $arr[1] ?? '';
 
-        if ( ! ((int)$decimal)) {
+        if (!((int)$decimal)) {
             $decimal = '';
         }
 
@@ -51,7 +40,7 @@ class Rmb
 
         $last = null;
         foreach (array_chunk($integerNumbers, 4) as $chunkKey => $chunk) {
-            if ( ! ((int)implode('', $chunk))) {
+            if (!((int)implode('', $chunk))) {
                 // 全是 0 则直接跳过
                 continue;
             }
@@ -60,7 +49,7 @@ class Rmb
 
             foreach ($chunk as $key => $number) {
                 // 去除重复 零，以及第一位的 零，类似：1002、110
-                if ( ! $number && ( ! $last || $key === 0)) {
+                if (!$number && (!$last || $key === 0)) {
                     $last = $number;
                     continue;
                 }
@@ -75,13 +64,13 @@ class Rmb
             }
         }
 
-        if ( ! $result) {
+        if (!$result) {
             $result[] = $capitalNumbers[0];
         }
 
         $result[] = '圆';
 
-        if ( ! $decimal) {
+        if (!$decimal) {
             $result[] = '整';
         }
 

@@ -1,6 +1,6 @@
 {
   "name": "xy_jx/utils",
-  "description": "utils",
+  "description": "utils🛠一个工具箱",
   "require": {
     "php": ">=7.3.0",
     "ext-openssl": "*"

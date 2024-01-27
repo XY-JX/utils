@@ -22,13 +22,13 @@ class Encryption
      *
      * @var string
      */
-    private static $key = '1dfc5ac960771fc943bdfa1ad5ebdfe7';
+    private static $key = 'ee8f5e4d038333d3543d175f6cf3ab6c';
     /**
      * 额外密钥
      *
      * @var string
      */
-    private static $iv = '58162f5cea907ce1';//请保证16位
+    private static $iv = '';//请保证16位
     /**
      * options 是以下标记的按位或： OPENSSL_RAW_DATA 、 OPENSSL_ZERO_PADDING
      *
@@ -101,15 +101,7 @@ class Encryption
      */
     public static function encrypt(array $data, string $iv = ''): string
     {
-        return url_safe_encode(
-            openssl_encrypt(
-                json_encode($data),
-                self::$method,
-                self::$key,
-                self::$options,
-                $iv ?: self::$iv
-            )
-        );
+        return url_safe_encode(openssl_encrypt(json_encode($data), self::$method, self::$key, self::$options, $iv ?: self::$iv));
     }
 
     /**
@@ -122,16 +114,7 @@ class Encryption
      */
     public static function decrypt(string $data, string $iv = ''): array
     {
-        return json_decode(
-            openssl_decrypt(
-                url_safe_decode($data),
-                self::$method,
-                self::$key,
-                self::$options,
-                $iv ?: self::$iv
-            ),
-            true
-        ) ?? [];
+        return json_decode(openssl_decrypt(url_safe_decode($data), self::$method, self::$key, self::$options, $iv ?: self::$iv), true) ?? [];
     }
 
 
@@ -147,13 +130,7 @@ class Encryption
     {
         $result = [];
         foreach (str_split(json_encode($encryptedData), self::$splitLength) as $chunk) {
-            $result[] = openssl_encrypt(
-                $chunk,
-                self::$method,
-                self::$key,
-                self::$options,
-                $iv ?: self::$iv
-            );
+            $result[] = openssl_encrypt($chunk, self::$method, self::$key, self::$options, $iv ?: self::$iv);
         }
 
         return url_safe_encode(implode(self::$splitSymbol, $result));
@@ -171,13 +148,7 @@ class Encryption
     {
         $result = '';
         foreach (explode(self::$splitSymbol, url_safe_decode($encryptedData)) as $chunk) {
-            $result .= openssl_decrypt(
-                $chunk,
-                self::$method,
-                self::$key,
-                self::$options,
-                $iv ?: self::$iv
-            );
+            $result .= openssl_decrypt($chunk, self::$method, self::$key, self::$options, $iv ?: self::$iv);
         }
 
         return json_decode($result, true) ?? [];
@@ -192,10 +163,9 @@ class Encryption
     public static function resetKey()
     {
         $f = './src/Encryption.php';
-        $s = uniqid(mt_rand(100, 999));
+        $s = uniqid(mt_rand(), true);
         $fileGet = file_get_contents($f);
         $file = str_replace(self::$key, md5($s), $fileGet);
-        $file = str_replace(self::$iv, $s, $file);
 
         return file_put_contents($f, $file);
     }

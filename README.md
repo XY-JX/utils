@@ -63,6 +63,7 @@ class xy
 {      
         //设置额外的密钥
         Jwt::set('iv', '@user@token@jwt*');
+        Jwt::set('key', '@user@token@jwt*');//默认key 0.8+
         $user  = [
             'id'        => 5,
             'tel'       => '188888888888',

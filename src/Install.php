@@ -12,6 +12,5 @@ class Install
     public static function install($event)
     {
         Encryption::resetKey();
-        Jwt::resetKey();
     }
 }

@@ -108,19 +108,14 @@ class Jwt
             'uuid' => global_id(),
         ];
 
-        $data = [
-            'type' => self::$type,
-            'exp' => $sigData['exp'],
-            'uuid' => $sigData['uuid'],
-        ];
         self::setKey();
-        if (!$token = Encryption::encrypt($sigData, self::$iv)) {
+        if (!$sigData['token'] = Encryption::encrypt($sigData, self::$iv)) {
             return false;
         }
-        //加密获取token
-        $data['token'] = $token;
+        unset($sigData['iss'], $sigData['aud'], $sigData['user'], $sigData['auth']);
 
-        return $data;
+        return $sigData;
+
     }
 
     /**

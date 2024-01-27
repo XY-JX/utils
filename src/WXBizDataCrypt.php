@@ -24,7 +24,7 @@ class WXBizDataCrypt
     public function __construct(string $appid, string $sessionKey)
     {
         self::$sessionKey = $sessionKey;
-        self::$appid      = $appid;
+        self::$appid = $appid;
     }
 
 
@@ -37,11 +37,8 @@ class WXBizDataCrypt
      *
      * @return int 成功0，失败返回对应的错误码
      */
-    public static function decryptData(
-        string $encryptedData,
-        string $iv,
-        &$data
-    ): int {
+    public static function decryptData(string $encryptedData, string $iv, &$data): int
+    {
         if (strlen(self::$sessionKey) != 24) {
             return -41001;
         }
@@ -55,13 +52,7 @@ class WXBizDataCrypt
 
         $aesCipher = base64_decode($encryptedData);
 
-        $result = openssl_decrypt(
-            $aesCipher,
-            "AES-128-CBC",
-            $aesKey,
-            1,
-            $aesIV
-        );
+        $result = openssl_decrypt($aesCipher, "AES-128-CBC", $aesKey, 1, $aesIV);
 
         $dataObj = json_decode($result, true);
         if ($dataObj == null) {

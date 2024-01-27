@@ -23,12 +23,6 @@ class Jwt
      */
     protected static $aud = 'xy-jx';
     /**
-     * 面向的用户
-     *
-     * @var string
-     */
-    protected static $sub = 'xy-jx';
-    /**
      * 签发类型
      *
      * @var string
@@ -39,7 +33,13 @@ class Jwt
      *
      * @var string
      */
-    protected static $iv = '@user@token@jwt@';
+    protected static $iv = '';//请保证16位
+    /**
+     * 加密key
+     * @var string
+     */
+    protected static $key = '';
+
 
     public function __construct(array $config = [])
     {
@@ -92,15 +92,14 @@ class Jwt
      * @param array $auth
      * @param int $expire
      *
-     * @return array
+     * @return array|bool
      */
-    public static function getToken(array $user, array $auth = [], int $expire = 0): array
+    public static function getToken(array $user, array $auth = [], int $expire = 0)
     {
         $time = time();
         $sigData = [
             'iss' => self::$iss,//签发者
             'aud' => self::$aud,//接收者
-            'sub' => self::$sub,//面向的用户
             'type' => self::$type,//类型
             'iat' => $time,//签发时间
             'exp' => $time + ($expire ?: 86400 * 7),//过期时间
@@ -114,7 +113,12 @@ class Jwt
             'exp' => $sigData['exp'],
             'uuid' => $sigData['uuid'],
         ];
-        $data['token'] = Encryption::encrypt($sigData, self::$iv);
+        self::setKey();
+        if (!$token = Encryption::encrypt($sigData, self::$iv)) {
+            return false;
+        }
+        //加密获取token
+        $data['token'] = $token;
 
         return $data;
     }
@@ -123,14 +127,15 @@ class Jwt
      * 获取用户信息
      *
      * @param string $token
+     * @param int $iat
      * @param null $uuid
      * @param array $auth
      *
      * @return array
      */
-    public static function getUser(string $token, &$uuid = null, array &$auth = []): array
+    public static function getUser(string $token, int $iat = 0, &$uuid = null, array &$auth = []): array
     {
-        $tokenData = self::checkToken($token);
+        $tokenData = self::checkToken($token, $iat);
         $uuid = $tokenData['uuid'] ?? null;
         $auth = $tokenData['auth'] ?? [];
 
@@ -140,13 +145,13 @@ class Jwt
     /**
      * 获取uuid
      *
-     * @param $token
-     *
+     * @param string $token
+     * @param int $iat
      * @return mixed|null
      */
-    public static function getUUID($token)
+    public static function getUUID(string $token, int $iat = 0)
     {
-        $tokenData = self::checkToken($token);
+        $tokenData = self::checkToken($token, $iat);
 
         return $tokenData['uuid'] ?? null;
     }
@@ -154,13 +159,13 @@ class Jwt
     /**
      * 获取type
      *
-     * @param $token
-     *
+     * @param string $token
+     * @param int $iat
      * @return mixed|null
      */
-    public static function getType($token)
+    public static function getType(string $token, int $iat = 0)
     {
-        $tokenData = self::checkToken($token);
+        $tokenData = self::checkToken($token, $iat);
 
         return $tokenData['type'] ?? null;
     }
@@ -168,13 +173,13 @@ class Jwt
     /**
      * 获取到期时间戳
      *
-     * @param $token
-     *
+     * @param string $token
+     * @param int $iat
      * @return int
      */
-    public static function getExp($token): int
+    public static function getExp(string $token, int $iat = 0): int
     {
-        $tokenData = self::checkToken($token);
+        $tokenData = self::checkToken($token, $iat);
 
         return $tokenData['exp'] ?? 0;
     }
@@ -182,13 +187,13 @@ class Jwt
     /**
      * 获取授权信息
      *
-     * @param $token
-     *
+     * @param string $token
+     * @param int $iat
      * @return array
      */
-    public static function getAuth($token): array
+    public static function getAuth(string $token, int $iat = 0): array
     {
-        $tokenData = self::checkToken($token);
+        $tokenData = self::checkToken($token, $iat);
 
         return $tokenData['auth'] ?? [];
     }
@@ -202,23 +207,24 @@ class Jwt
      */
     public static function getTokenData($token): array
     {
+        self::setKey();
         return Encryption::decrypt($token, self::$iv);
     }
 
-    private static function checkToken($token): array
+    private static function checkToken($token, $iat = 0): array
     {
         try {
-            if (!$tokenData = Encryption::decrypt($token, self::$iv)) {
+            if (!$tokenData = self::getTokenData($token)) {
                 throw new \Exception('token错误');
+            }
+            if (!empty($iat) && $tokenData['iat'] < $iat) {
+                throw new \Exception('token已过期');
             }
             if ($tokenData['exp'] < time()) {
                 throw new \Exception('token已过期');
             }
             if ($tokenData['aud'] != self::$aud) {
                 throw new \Exception('接收者错误');
-            }
-            if ($tokenData['sub'] != self::$sub) {
-                throw new \Exception('面向的用户错误');
             }
 
             return $tokenData;
@@ -228,17 +234,19 @@ class Jwt
     }
 
     /**
-     * 重置密钥 不建议使用
-     *
-     * @return false|int
+     * 如果设置了key则设置加密
+     * @return bool
      */
-    public static function resetKey()
+    protected static function setKey(): bool
     {
-        $f = './src/Jwt.php';
-        $s = uniqid(mt_rand(100, 999));
-        $fileGet = file_get_contents($f);
-        $file = str_replace(self::$iv, $s, $fileGet);
+        //如果设置了key则设置加密
+        if (!empty(self::$key)) {
 
-        return file_put_contents($f, $file);
+            return Encryption::set('key', self::$key);
+
+        }
+
+        return true;
     }
+
 }

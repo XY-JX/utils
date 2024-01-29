@@ -29,6 +29,11 @@ class Jwt
      */
     protected static $type = 'Bearer';
     /**
+     * token过期时间
+     * @var int
+     */
+    protected static $expires = 86400 * 7;
+    /**
      * 额外密钥必须16位字符(请自己设置并防止泄漏)
      *
      * @var string
@@ -104,7 +109,7 @@ class Jwt
             'aud' => self::$aud,//接收者
             'type' => self::$type,//类型
             'iat' => $time,//签发时间
-            'exp' => $time + ($expire ?: 86400 * 7),//过期时间
+            'exp' => $time + ($expire ?: self::$expires),//过期时间
             'user' => $user,//需要存储的用户信息
             'auth' => $auth,//需要存储的额外信息如授权
             'uuid' => global_id(),

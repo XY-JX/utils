@@ -109,7 +109,7 @@ class Jwt
         ];
 
         self::setConfig();
-        if (!$sigData['token'] = Encryption::encrypt($sigData)) {
+        if (!$sigData['token'] = Encryption::encrypt($sigData, self::$iv)) {
             return false;
         }
         unset($sigData['iss'], $sigData['aud'], $sigData['user'], $sigData['auth']);
@@ -199,7 +199,7 @@ class Jwt
     public static function getTokenData($token): array
     {
         self::setConfig();
-        return Encryption::decrypt($token);
+        return Encryption::decrypt($token, self::$iv);
     }
 
     private static function checkToken($token): array
@@ -230,10 +230,6 @@ class Jwt
         //如果设置了key则设置加密
         if (!empty(self::$key)) {
             Encryption::set('key', self::$key);
-        }
-        //如果设置了iv则设置加密
-        if (!empty(self::$iv)) {
-            Encryption::set('iv', self::$iv);
         }
 
         return true;

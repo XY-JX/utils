@@ -40,6 +40,8 @@ class Jwt
      */
     protected static $key = '';
 
+    protected static $isSetConfig = false;
+
 
     public function __construct(array $config = [])
     {
@@ -227,10 +229,15 @@ class Jwt
      */
     protected static function setConfig(): bool
     {
+        if (self::$isSetConfig) {
+
+            return true;
+        }
         //如果设置了key则设置加密
         if (!empty(self::$key)) {
             Encryption::set('key', self::$key);
         }
+        self::$isSetConfig = true;
 
         return true;
     }

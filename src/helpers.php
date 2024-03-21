@@ -113,16 +113,17 @@ if (!function_exists('global_id')) {
 if (!function_exists('day_surplus_time')) {
     /**
      * 获取一天剩余时间秒
+     * @param int $min 最小返回值，防止出现负数或0,导致永久缓存
      *
      * @return int
      */
-    function day_surplus_time(): int
+    function day_surplus_time(int $min = 0): int
     {
         // 获取明天的 0 点（即明天的第一秒）的 UNIX 时间戳
         $endTime = strtotime('tomorrow') - 1;
         // 计算剩余时间的秒数
-
-        return $endTime - time();
+        $secondsLeft = $endTime - time();
+        return max($secondsLeft, $min);
     }
 }
 if (!function_exists('url_safe_encode')) {

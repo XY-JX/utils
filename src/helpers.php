@@ -121,9 +121,8 @@ if (!function_exists('day_surplus_time')) {
         // 获取明天的 0 点（即明天的第一秒）的 UNIX 时间戳
         $endTime = strtotime('tomorrow') - 1;
         // 计算剩余时间的秒数
-        $secondsLeft = $endTime - time();
 
-        return max($secondsLeft, 1);
+        return $endTime - time();
     }
 }
 if (!function_exists('url_safe_encode')) {

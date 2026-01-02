@@ -162,11 +162,10 @@ class Encryption
      */
     public static function resetKey()
     {
-        $f = './src/Encryption.php';
         $s = uniqid(mt_rand(), true);
-        $fileGet = file_get_contents($f);
+        $fileGet = file_get_contents(__FILE__);
         $file = str_replace(self::$key, md5($s), $fileGet);
 
-        return file_put_contents($f, $file);
+        return file_put_contents(__FILE__, $file);
     }
 }

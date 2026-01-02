@@ -1,7 +1,7 @@
 <?php
 
 namespace xy_jx\Utils;
-
+use Composer\Script\Event;
 class Install
 {
     /**
@@ -9,7 +9,7 @@ class Install
      * @param mixed $event
      * @return void
      */
-    public static function install($event)
+    public static function install(Event $event)
     {
         Encryption::resetKey();
     }

@@ -140,7 +140,7 @@ class Captcha
 
         // 验证码使用随机字体
         $fontMax = $this->math ? 5 : 6;
-        $fontttf = $this->fontttf ?: $this->getFontPath(__DIR__ . '/../Font/' . mt_rand(1, $fontMax) . '.ttf');
+        $fontttf = $this->fontttf ?: $this->getFontPath(dirname(__DIR__). '/Font/' . mt_rand(1, $fontMax) . '.ttf');
 
         if ($this->useNoise) {
             // 绘杂点

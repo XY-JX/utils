@@ -12,43 +12,43 @@ class Captcha
 {
     // 验证码图片实例
     private $im = null;
-    
+
     // 验证码字体颜色
     private $color = null;
-    
+
     // 验证码字符集合
     protected $codeSet = '2345678abcdefhijkmnpqrstuvwxyzABCDEFGHJKLMNPQRTUVWXY';
-    
+
     // 验证码字体大小 (px)
     protected $fontSize = 25;
-    
+
     // 是否画混淆曲线
     protected $useCurve = true;
-    
+
     // 是否添加杂点
     protected $useNoise = true;
-    
+
     // 验证码图片高度
     protected $imageH = 0;
-    
+
     // 验证码图片宽度
     protected $imageW = 0;
-    
+
     // 验证码位数
     protected $length = 4;
-    
+
     // 验证码字体，不设置随机获取
     protected $fontttf = '';
-    
+
     // 背景颜色
     protected $bg = [180, 255];
-    
+
     // 算术验证码
     protected $math = false;
-    
+
     // 加密等级
     protected $encryptionLevel = 5;
-    
+
     // 背景图片
     protected $backgroundImages = [];
 
@@ -140,7 +140,7 @@ class Captcha
 
         // 验证码使用随机字体
         $fontMax = $this->math ? 5 : 6;
-        $fontttf = $this->fontttf ?: $this->getFontPath(dirname(__DIR__). '/Font/' . mt_rand(1, $fontMax) . '.ttf');
+        $fontttf = $this->fontttf ?: $this->getFontPath(dirname(__DIR__) . '/Font/' . mt_rand(1, $fontMax) . '.ttf');
 
         if ($this->useNoise) {
             // 绘杂点
@@ -165,8 +165,9 @@ class Captcha
         // 输出图像
         imagepng($this->im);
         $content = ob_get_clean();
-        imagedestroy($this->im);
-
+        if (PHP_VERSION_ID < 80000) {
+            @imagedestroy($this->im);
+        }
         return [
             'key' => $generator['key'],
             'code' => $generator['code'],
@@ -216,7 +217,7 @@ class Captcha
 
     /**
      * 数学运算
-     * 
+     *
      * @return array [算式，答案]
      */
     protected function mathOperation(): array
@@ -224,7 +225,7 @@ class Captcha
         $this->length = 5;
         $x = mt_rand(0, 99);
         $y = mt_rand(0, 99);
-        
+
         switch (mt_rand(1, 2)) {
             case 1:
                 $value = "{$x} + {$y} = ";
@@ -235,7 +236,7 @@ class Captcha
                 $code = $x;
                 break;
         }
-        
+
         return [(string)$value, (string)$code];
     }
 
@@ -337,7 +338,7 @@ class Captcha
         list($width, $height) = @getimagesize($gb);
         // Resample
         $bgImage = @imagecreatefromjpeg($gb);
-        
+
         if ($bgImage !== false) {
             @imagecopyresampled(
                 $this->im,
@@ -348,21 +349,23 @@ class Captcha
                 $width,
                 $height
             );
-            @imagedestroy($bgImage);
+            if (PHP_VERSION_ID < 80000) {
+                @imagedestroy($bgImage);
+            }
         }
     }
 
     /**
      * 获取字体文件路径
-     * 
+     *
      * @param string $font
-     * 
+     *
      * @return string
      */
     protected function getFontPath(string $font): string
     {
         static $fontPathMap = [];
-        
+
         if (!\class_exists(\Phar::class, false) || !\Phar::running()) {
             return $font;
         }
@@ -374,10 +377,10 @@ class Captcha
                 mkdir($tmpPath, 0777, true);
             }
         }
-        
+
         $filePath = "$tmpPath/" . basename($font);
         clearstatcache();
-        
+
         if (!isset($fontPathMap[$font]) || !is_file($filePath)) {
             $content = file_get_contents($font);
             if ($content !== false) {
@@ -385,7 +388,7 @@ class Captcha
                 $fontPathMap[$font] = $filePath;
             }
         }
-        
+
         return $fontPathMap[$font] ?? $font;
     }
 }
